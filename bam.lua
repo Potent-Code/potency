@@ -6,7 +6,7 @@ objectPath = "obj/"
 settings = NewSettings()
 
 -- full warning level, treat warnings as errors
-settings.cc.flags:Add("-Wall -Wextra -Werror")
+settings.cc.flags:Add("-Wall -Wextra -Werror -Wno-unused-function")
 
 -- output objects to obj directory
 ExecuteSilent("mkdir obj")
