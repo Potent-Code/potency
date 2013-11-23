@@ -1,6 +1,6 @@
 -- important paths
-sourcePath = "./src/"
-objectPath = "./obj/"
+sourcePath = "src/"
+objectPath = "obj/"
 
 -- set up compiler settings
 settings = NewSettings()
@@ -11,7 +11,7 @@ settings.cc.flags:Add("-Wall -Wextra -Werror")
 -- output objects to obj directory
 ExecuteSilent("mkdir obj")
 settings.cc.Output = function(settings, input)
-	return "./obj/"
+	return objectPath .. PathFilename(PathBase(input))
 end
 
 -- collect sources and compile
