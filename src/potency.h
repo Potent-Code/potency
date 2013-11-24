@@ -9,6 +9,10 @@
 #define potency_unique_name_line( name, line ) potency_unique_name_line2( name, line )
 #define potency_unique_name( name ) potency_unique_name_line( name, __LINE__ )
 
+#define potency_line_info3(file, line) file " (" #line "): "
+#define potency_line_info2(file, line) potency_line_info3(file, line)
+#define potency_line_info() potency_line_info2(__FILE__, __LINE__)
+
 // potency_test_case
 struct _potency_test_case;
 typedef void(*potency_test_case_function)( struct _potency_test_case* );
@@ -43,7 +47,14 @@ extern void potency_add_test_case( const char* name, const char* description, co
 	}\
 	else\
 	{\
-		printf("*** assertion failed: %s\n", #expression);\
+		printf("*** %s assertion failed: CHECK(%s)\n", potency_line_info(), #expression);\
+	}
+
+#define REQUIRE(expression)\
+	if (!expression)\
+	{\
+		printf("!!! %s assertion failed: REQUIRE(%s)\n", potency_line_info(), #expression);\
+		return;\
 	}
 
 

@@ -1,4 +1,5 @@
 #include "potency.h"
+#include "report_formats.h"
 
 #include <stdbool.h>
 #include <stdlib.h>
@@ -175,12 +176,32 @@ int main(int argc, char** argv)
 			printf("%-30s* %s\n", currentCase->testCase->name, currentCase->testCase->description);
 			currentCase = currentCase->next;
 		}
+		return 0;
 	}
 
-	// loop over test cases
+	// run test cases
 	while (currentCase != NULL)
 	{
+		currentCase->testCase->run(currentCase->testCase);
+
 		currentCase = currentCase->next;
+	}
+
+	switch (flags.format)
+	{
+		case outputFormatMarkdown:
+			prepare_report_markdown();
+			break;
+		case outputFormatJSON:
+			prepare_report_json();
+			break;
+		case outputFormatXML:
+			prepare_report_xml();
+			break;
+		case outputFormatASCII:
+		default:
+			prepare_report_ascii();
+			break;
 	}
 
 	// clean up
