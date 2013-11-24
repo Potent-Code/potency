@@ -24,12 +24,16 @@ typedef struct _potency_test_case
 	double runTime;
 } potency_test_case;
 
-// static int potency_add_test_case( const char* name, const char* description, const potency_test_case_function _run );
+extern void potency_add_test_case( const char* name, const char* description, const potency_test_case_function _run );
 
 #define TEST_CASE( name, description )\
-static void potency_unique_name( potency_test_case_implementation_ )(potency_test_case* testCase); \
-static void potency_unique_name( potency_test_case_implementation_ )(potency_test_case* testCase)
-//static const int potency_unique_name( potency_unused_ ) = potency_add_test_case( name, description, &potency_unique_name(potency_test_case_implementation_)); 
+	static void potency_unique_name( potency_test_case_implementation_ )( potency_test_case* testCase ); \
+	static void potency_unique_name( potency_test_case_ctor_ )()  __attribute__((constructor)); \
+	static void potency_unique_name( potency_test_case_ctor_ )()\
+	{\
+		potency_add_test_case( name, description, &potency_unique_name( potency_test_case_implementation_ ));\
+	} \
+	static void potency_unique_name( potency_test_case_implementation_ )( potency_test_case* testCase )\
 
 #define CHECK(expression)\
 	testCase->assertions++;\
