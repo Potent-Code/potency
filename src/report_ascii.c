@@ -5,7 +5,6 @@
 void prepare_report_ascii()
 {
 	test_statistics stats;
-
 	collect_statistics(&stats);
 
 	printf("\n");
