@@ -28,6 +28,7 @@ typedef struct _potency_test_case
 	double runTime;
 } potency_test_case;
 
+// list of potency_test_case structs
 typedef struct _potency_test_case_list
 {
 	potency_test_case* testCase;
@@ -35,8 +36,13 @@ typedef struct _potency_test_case_list
 	struct _potency_test_case_list* prev;
 } potency_test_case_list;
 
+// potency_output_function takes __FILE__, __LINE__, #expression
+typedef void(*potency_output_function)(potency_test_case* testCase, const char*, const uint32_t, const char*);
+
 extern void potency_add_test_case( const char* name, const char* description, const potency_test_case_function _run );
 extern potency_test_case_list* potency_get_test_case_list();
+extern potency_output_function potency_print_assertion;
+extern potency_output_function potency_print_requirement;
 
 #define TEST_CASE( name, description )\
 	static void potency_unique_name( potency_test_case_implementation_ )( potency_test_case* testCase ); \
@@ -45,8 +51,27 @@ extern potency_test_case_list* potency_get_test_case_list();
 	{\
 		potency_add_test_case( name, description, &potency_unique_name( potency_test_case_implementation_ ));\
 	} \
-	static void potency_unique_name( potency_test_case_implementation_ )( potency_test_case* testCase )\
+	static void potency_unique_name( potency_test_case_implementation_ )( potency_test_case* testCase )
 
+#define CHECK(expression)\
+	testCase->assertions++;\
+	if (expression)\
+	{\
+		testCase->passedAssertions++;\
+	}\
+	else\
+	{\
+		(*potency_print_assertion)(testCase, __FILE__, __LINE__, #expression);\
+	}
+
+#define REQUIRE(expression)\
+	if (!expression)\
+	{\
+		(*potency_print_requirement)(testCase, __FILE__, __LINE__, #expression);\
+		return;\
+	}
+
+/*
 #define CHECK(expression)\
 	testCase->assertions++;\
 	if (expression)\
@@ -64,6 +89,6 @@ extern potency_test_case_list* potency_get_test_case_list();
 		printf("!!! %s assertion failed: REQUIRE(%s)\n", potency_line_info(), #expression);\
 		return;\
 	}
-
+*/
 
 #endif // !potency_h

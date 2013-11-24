@@ -1,6 +1,8 @@
 #ifndef potency_report_h
 #define potency_report_h
 
+#include <stdint.h>
+
 typedef struct _test_statistics
 {
 	uint32_t testCases;

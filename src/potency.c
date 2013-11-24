@@ -7,6 +7,9 @@
 
 static potency_test_case_list* testCaseHead = NULL;
 
+potency_output_function potency_print_assertion = NULL;		// output function for CHECK
+potency_output_function potency_print_requirement = NULL;	// output function for REQUIRE
+
 void potency_add_test_case( const char* name, const char* description, potency_test_case_function _run )
 {
 	potency_test_case* newTestCase = calloc(1, sizeof(*newTestCase));
@@ -58,6 +61,9 @@ int main(int argc, char** argv)
 {
 	int i;
 	potency_test_case_list* currentCase = potency_get_test_case_list();
+	void(*potency_print_report)() = NULL;
+	void(*potency_print_report_header)() = NULL;
+	void(*potency_print_report_footer)() = NULL;
 
 	// output mode
 	typedef enum
@@ -177,8 +183,30 @@ int main(int argc, char** argv)
 		return 0;
 	}
 
+	// setup output functions
+	switch (flags.format)
+	{
+		case outputFormatMarkdown:
+			potency_print_report = &potency_print_report_markdown;
+			break;
+		case outputFormatJSON:
+			potency_print_report = &potency_print_report_json;
+			break;
+		case outputFormatXML:
+			potency_print_report = &potency_print_report_xml;
+			break;
+		case outputFormatASCII:
+		default:
+			potency_print_report_header = &potency_print_report_header_ascii;
+			potency_print_report = &potency_print_report_ascii;
+			potency_print_report_footer = &potency_print_report_footer_ascii;
+			potency_print_assertion = &potency_print_assertion_ascii;
+			potency_print_requirement = &potency_print_requirement_ascii;
+			break;
+	}
+
 	// run test cases
-	printf("\n");
+	(*potency_print_report_header)();
 	while (currentCase != NULL)
 	{
 		currentCase->testCase->run(currentCase->testCase);
@@ -186,22 +214,9 @@ int main(int argc, char** argv)
 		currentCase = currentCase->next;
 	}
 
-	switch (flags.format)
-	{
-		case outputFormatMarkdown:
-			prepare_report_markdown();
-			break;
-		case outputFormatJSON:
-			prepare_report_json();
-			break;
-		case outputFormatXML:
-			prepare_report_xml();
-			break;
-		case outputFormatASCII:
-		default:
-			prepare_report_ascii();
-			break;
-	}
+	// output statistics
+	(*potency_print_report)();
+	(*potency_print_report_footer)();
 
 	// clean up
 	potency_cleanup_test_cases();

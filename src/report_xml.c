@@ -2,7 +2,7 @@
 #include "report.h"
 #include "report_xml.h"
 
-void prepare_report_xml()
+void potency_print_report_xml()
 {
 	test_statistics stats;
 	collect_statistics(&stats);

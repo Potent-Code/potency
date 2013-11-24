@@ -2,7 +2,7 @@
 #include "report.h"
 #include "report_markdown.h"
 
-void prepare_report_markdown()
+void potency_print_report_markdown()
 {
 	test_statistics stats;
 	collect_statistics(&stats);
