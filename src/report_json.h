@@ -3,7 +3,7 @@
 
 #include "potency.h"
 
-extern void potency_print_report_header_json();
+extern void potency_print_report_header_json(const char* testSuite);
 extern void potency_print_report_json();
 extern void potency_print_report_footer_json();
 extern void potency_print_assertion_json(potency_test_case* testCase, const char* file, const uint32_t line, const char* expression);

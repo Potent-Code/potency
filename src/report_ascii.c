@@ -1,11 +1,30 @@
 #include "report.h"
 #include "report_ascii.h"
 
+#include <string.h>
+
 potency_test_case* currentTestCase = NULL;
 
-void potency_print_report_header_ascii()
+void potency_print_report_header_ascii(const char* testSuite)
 {
-	printf("\n");
+	uint32_t testSuiteLength = strlen(testSuite);
+	size_t i;
+
+	printf("-----------------------------------------------------------------\n|");
+
+	for (i = 0; i < 29 - (testSuiteLength) / 2; i++)
+	{
+		printf(" ");
+	}
+
+	printf(" %s ", testSuite);
+
+	for (; i < (61 - testSuiteLength); i++)
+	{
+		printf(" ");
+	}
+
+	printf("|\n-----------------------------------------------------------------\n\n");
 }
 
 void potency_print_report_ascii()

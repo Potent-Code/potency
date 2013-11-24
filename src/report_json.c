@@ -3,9 +3,10 @@
 
 potency_test_case* currentTestCase;
 
-void potency_print_report_header_json()
+void potency_print_report_header_json(const char* testSuite)
 {
 	printf("{\n");
+	(void)testSuite;
 }
 
 void potency_print_report_json()

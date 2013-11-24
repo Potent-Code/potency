@@ -3,7 +3,7 @@
 
 #include "potency.h"
 
-extern void potency_print_report_header_ascii();
+extern void potency_print_report_header_ascii(const char* testSuite);
 extern void potency_print_report_ascii();
 extern void potency_print_report_footer_ascii();
 extern void potency_print_assertion_ascii(potency_test_case* testCase, const char* file, const uint32_t line, const char* expression);

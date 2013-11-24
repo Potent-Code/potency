@@ -62,7 +62,7 @@ int main(int argc, char** argv)
 	int i;
 	potency_test_case_list* currentCase = potency_get_test_case_list();
 	void(*potency_print_report)() = NULL;
-	void(*potency_print_report_header)() = NULL;
+	void(*potency_print_report_header)(const char*) = NULL;
 	void(*potency_print_report_footer)() = NULL;
 
 	// output mode
@@ -187,13 +187,25 @@ int main(int argc, char** argv)
 	switch (flags.format)
 	{
 		case outputFormatMarkdown:
+			potency_print_report_header = &potency_print_report_header_markdown;
 			potency_print_report = &potency_print_report_markdown;
+			potency_print_report_footer = &potency_print_report_footer_markdown;
+			potency_print_assertion = &potency_print_assertion_markdown;
+			potency_print_requirement = &potency_print_requirement_markdown;
 			break;
 		case outputFormatJSON:
+			potency_print_report_header = &potency_print_report_header_json;
 			potency_print_report = &potency_print_report_json;
+			potency_print_report_footer = &potency_print_report_footer_json;
+			potency_print_assertion = &potency_print_assertion_json;
+			potency_print_requirement = &potency_print_requirement_json;
 			break;
 		case outputFormatXML:
+			potency_print_report_header = &potency_print_report_header_xml;
 			potency_print_report = &potency_print_report_xml;
+			potency_print_report_footer = &potency_print_report_footer_xml;
+			potency_print_assertion = &potency_print_assertion_xml;
+			potency_print_requirement = &potency_print_requirement_xml;
 			break;
 		case outputFormatASCII:
 		default:
@@ -206,7 +218,7 @@ int main(int argc, char** argv)
 	}
 
 	// run test cases
-	(*potency_print_report_header)();
+	(*potency_print_report_header)(argv[0]);
 	while (currentCase != NULL)
 	{
 		currentCase->testCase->run(currentCase->testCase);
