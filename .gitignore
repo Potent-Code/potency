@@ -3,3 +3,9 @@
 
 # ignore compilation output directory
 obj
+
+# ignore shared libraries
+*.so
+
+# ignore test binary
+test_potency
