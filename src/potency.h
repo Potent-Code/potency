@@ -28,7 +28,15 @@ typedef struct _potency_test_case
 	double runTime;
 } potency_test_case;
 
+typedef struct _potency_test_case_list
+{
+	potency_test_case* testCase;
+	struct _potency_test_case_list* next;
+	struct _potency_test_case_list* prev;
+} potency_test_case_list;
+
 extern void potency_add_test_case( const char* name, const char* description, const potency_test_case_function _run );
+extern potency_test_case_list* potency_get_test_case_list();
 
 #define TEST_CASE( name, description )\
 	static void potency_unique_name( potency_test_case_implementation_ )( potency_test_case* testCase ); \

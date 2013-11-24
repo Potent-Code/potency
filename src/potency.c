@@ -5,13 +5,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct _potency_test_case_list
-{
-	potency_test_case* testCase;
-	struct _potency_test_case_list* next;
-	struct _potency_test_case_list* prev;
-} potency_test_case_list;
-
 static potency_test_case_list* testCaseHead = NULL;
 
 void potency_add_test_case( const char* name, const char* description, potency_test_case_function _run )
@@ -42,9 +35,14 @@ void potency_add_test_case( const char* name, const char* description, potency_t
 	return;
 }
 
+potency_test_case_list* potency_get_test_case_list()
+{
+	return testCaseHead;
+}
+
 static void potency_cleanup_test_cases()
 {
-	potency_test_case_list* currentTestCaseList = testCaseHead;
+	potency_test_case_list* currentTestCaseList = potency_get_test_case_list();
 
 	while (currentTestCaseList != NULL)
 	{
@@ -59,7 +57,7 @@ static void potency_cleanup_test_cases()
 int main(int argc, char** argv)
 {
 	int i;
-	potency_test_case_list* currentCase = testCaseHead;
+	potency_test_case_list* currentCase = potency_get_test_case_list();
 
 	// output mode
 	typedef enum
@@ -180,6 +178,7 @@ int main(int argc, char** argv)
 	}
 
 	// run test cases
+	printf("\n");
 	while (currentCase != NULL)
 	{
 		currentCase->testCase->run(currentCase->testCase);
