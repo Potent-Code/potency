@@ -1,0 +1,5 @@
+# ignore bam intermediates
+.bam
+
+# ignore compilation output directory
+obj
