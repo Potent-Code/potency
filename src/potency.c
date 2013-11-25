@@ -1,18 +1,16 @@
 #include "potency.h"
-#include "report_formats.h"
+#include "report_markdown.h"
+#include "report_json.h"
+#include "report_xml.h"
 
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct _potency_test_case_list
-{
-	potency_test_case* testCase;
-	struct _potency_test_case_list* next;
-	struct _potency_test_case_list* prev;
-} potency_test_case_list;
-
 static potency_test_case_list* testCaseHead = NULL;
+
+potency_output_function potency_print_assertion = NULL;		// output function for CHECK
+potency_output_function potency_print_requirement = NULL;	// output function for REQUIRE
 
 void potency_add_test_case( const char* name, const char* description, potency_test_case_function _run )
 {
@@ -42,9 +40,14 @@ void potency_add_test_case( const char* name, const char* description, potency_t
 	return;
 }
 
+potency_test_case_list* potency_get_test_case_list()
+{
+	return testCaseHead;
+}
+
 static void potency_cleanup_test_cases()
 {
-	potency_test_case_list* currentTestCaseList = testCaseHead;
+	potency_test_case_list* currentTestCaseList = potency_get_test_case_list();
 
 	while (currentTestCaseList != NULL)
 	{
@@ -59,12 +62,14 @@ static void potency_cleanup_test_cases()
 int main(int argc, char** argv)
 {
 	int i;
-	potency_test_case_list* currentCase = testCaseHead;
+	potency_test_case_list* currentCase = potency_get_test_case_list();
+	void(*potency_print_report)() = NULL;
+	void(*potency_print_report_header)(const char*) = NULL;
+	void(*potency_print_report_footer)() = NULL;
 
 	// output mode
 	typedef enum
 	{
-		outputFormatASCII,
 		outputFormatMarkdown,
 		outputFormatJSON,
 		outputFormatXML
@@ -82,7 +87,7 @@ int main(int argc, char** argv)
 
 	// set default flags
 	flags.threads = 1;
-	flags.format = outputFormatASCII;
+	flags.format = outputFormatMarkdown;
 	flags.verboseMode = false;
 	flags.listMode = false;
 	flags.helpMode = false;
@@ -95,13 +100,7 @@ int main(int argc, char** argv)
 			// get format
 			if ((strcmp(argv[i], "-f") == 0) || (strcmp(argv[i], "--format") == 0))
 			{
-				if (strcmp(argv[i+1], "ascii") == 0)
-				{
-					flags.format = outputFormatASCII;
-					i++;
-					continue;
-				}
-				else if (strcmp(argv[i+1], "markdown") == 0)
+				if (strcmp(argv[i+1], "markdown") == 0)
 				{
 					flags.format = outputFormatMarkdown;
 					i++;
@@ -157,7 +156,7 @@ int main(int argc, char** argv)
 	{
 		printf("Usage: %s [OPTIONS]... [FILTERS]...\n", argv[0]);
 		printf("OPTIONS\n");
-		printf("  -f, --format\t\t\tSpecify output format. Must be one of ascii, markdown, json, or xml. Defaults to ascii.\n");
+		printf("  -f, --format\t\t\tSpecify output format. Must be one of markdown, json, or xml. Defaults to markdown.\n");
 		printf("  -l, --list\t\t\tList known test cases\n");
 		printf("  -t, --threads\t\t\tSpecify number of threads to run. Must be at least one, and at most the number of test cases linked\n");
 		printf("  -v, --verbose\t\t\tIncrease the amount of output\n");
@@ -179,7 +178,35 @@ int main(int argc, char** argv)
 		return 0;
 	}
 
+	// setup output functions
+	switch (flags.format)
+	{
+		case outputFormatJSON:
+			potency_print_report_header = &potency_print_report_header_json;
+			potency_print_report = &potency_print_report_json;
+			potency_print_report_footer = &potency_print_report_footer_json;
+			potency_print_assertion = &potency_print_assertion_json;
+			potency_print_requirement = &potency_print_requirement_json;
+			break;
+		case outputFormatXML:
+			potency_print_report_header = &potency_print_report_header_xml;
+			potency_print_report = &potency_print_report_xml;
+			potency_print_report_footer = &potency_print_report_footer_xml;
+			potency_print_assertion = &potency_print_assertion_xml;
+			potency_print_requirement = &potency_print_requirement_xml;
+			break;
+		case outputFormatMarkdown:
+		default:
+			potency_print_report_header = &potency_print_report_header_markdown;
+			potency_print_report = &potency_print_report_markdown;
+			potency_print_report_footer = &potency_print_report_footer_markdown;
+			potency_print_assertion = &potency_print_assertion_markdown;
+			potency_print_requirement = &potency_print_requirement_markdown;
+			break;
+	}
+
 	// run test cases
+	(*potency_print_report_header)(argv[0]);
 	while (currentCase != NULL)
 	{
 		currentCase->testCase->run(currentCase->testCase);
@@ -187,22 +214,9 @@ int main(int argc, char** argv)
 		currentCase = currentCase->next;
 	}
 
-	switch (flags.format)
-	{
-		case outputFormatMarkdown:
-			prepare_report_markdown();
-			break;
-		case outputFormatJSON:
-			prepare_report_json();
-			break;
-		case outputFormatXML:
-			prepare_report_xml();
-			break;
-		case outputFormatASCII:
-		default:
-			prepare_report_ascii();
-			break;
-	}
+	// output statistics
+	(*potency_print_report)();
+	(*potency_print_report_footer)();
 
 	// clean up
 	potency_cleanup_test_cases();
