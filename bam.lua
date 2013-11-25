@@ -8,7 +8,7 @@ testObjectPath = "obj/test/"
 settings = NewSettings()
 
 -- full warning level, treat warnings as errors
-settings.cc.flags:Add("-Wall -Wextra -Werror -Wno-unused-function")
+settings.cc.flags:Add("-Wall -Wextra -Werror")
 -- use fPIC for making a shared object
 settings.cc.flags:Add("-fPIC")
 
@@ -28,7 +28,7 @@ libpotency = SharedLibrary(settings, "libpotency", objects)
 -- build test binary
 settings = NewSettings()
 -- full warning level, treat warnings as errors
-settings.cc.flags:Add("-Wall -Wextra -Werror -Wno-unused-function")
+settings.cc.flags:Add("-Wall -Wextra -Werror")
 -- use fPIC for making a shared object
 settings.cc.flags:Add("-fPIC")
 settings.cc.includes:Add(sourcePath)
@@ -41,6 +41,7 @@ settings.cc.Output = function(settings, input)
 	return testObjectPath .. PathFilename(PathBase(input))
 end
 
+-- compile test_potency test suite
 source = Collect(testPath .. "*.c")
 objects = Compile(settings, source)
 exe = Link(settings, "test_potency", objects)
