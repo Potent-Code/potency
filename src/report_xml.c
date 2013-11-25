@@ -10,7 +10,7 @@ void potency_print_report_header_xml(const char* testSuite)
 void potency_print_report_xml()
 {
 	test_statistics stats;
-	collect_statistics(&stats);
+	potency_collect_statistics(&stats);
 
 	printf("<statistics>\n");
 	printf("\t<assertions>%u</assertions>\n", stats.assertions);

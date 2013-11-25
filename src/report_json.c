@@ -12,7 +12,7 @@ void potency_print_report_header_json(const char* testSuite)
 void potency_print_report_json()
 {
 	test_statistics stats;
-	collect_statistics(&stats);
+	potency_collect_statistics(&stats);
 
 	printf("\t\"statistics\": {\n");
 	printf("\t\t\"testCases\":%u,\n", stats.testCases);

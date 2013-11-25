@@ -1,7 +1,7 @@
 #include "potency.h"
 #include "report.h"
 
-void collect_statistics(test_statistics* stats)
+void potency_collect_statistics(test_statistics* stats)
 {
 	// initialize statistics struct
 	stats->testCases = 0;

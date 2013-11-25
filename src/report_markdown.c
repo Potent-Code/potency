@@ -18,7 +18,7 @@ void potency_print_report_header_markdown(const char* testSuite)
 void potency_print_report_markdown()
 {
 	test_statistics stats;
-	collect_statistics(&stats);
+	potency_collect_statistics(&stats);
 
 	printf("Unit Test Report\n");
 	printf("----------------\n\n");
