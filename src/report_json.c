@@ -1,7 +1,7 @@
 #include "report.h"
 #include "report_json.h"
 
-potency_test_case* currentTestCase;
+static potency_test_case* currentTestCase;
 
 void potency_print_report_header_json(const char* testSuite)
 {

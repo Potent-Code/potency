@@ -4,7 +4,7 @@
 
 #include <string.h>
 
-potency_test_case* currentTestCase = NULL;
+static potency_test_case* currentTestCase = NULL;
 
 void potency_print_report_header_markdown(const char* testSuite)
 {

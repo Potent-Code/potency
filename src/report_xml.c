@@ -2,9 +2,15 @@
 #include "report.h"
 #include "report_xml.h"
 
+#include <stdbool.h>
+
+static potency_test_case* currentTestCase = NULL;
+bool caseTagOpen = false;
+
 void potency_print_report_header_xml(const char* testSuite)
 {
-	(void)testSuite;
+	printf("<potency>\n");
+	printf("\t<test_suite>%s</test_suite>\n", testSuite);
 }
 
 void potency_print_report_xml()
@@ -12,32 +18,58 @@ void potency_print_report_xml()
 	test_statistics stats;
 	potency_collect_statistics(&stats);
 
-	printf("<statistics>\n");
-	printf("\t<assertions>%u</assertions>\n", stats.assertions);
-	printf("\t<passedassertions>%u</passedassertions>\n", stats.passedAssertions);
-	printf("\t<failedassertions>%u</failedassertions>\n", stats.failedAssertions);
-	printf("\t<successpercentage>%.2f</successpercentage>\n", stats.successPercentage);
-	printf("\t<testcases>%u</testcases>\n", stats.testCases);
-	printf("</statistics>\n");
+	if (caseTagOpen)
+	{
+		printf("\t</test_case>\n");
+	}
+
+	printf("\t<statistics>\n");
+	printf("\t\t<assertions>%u</assertions>\n", stats.assertions);
+	printf("\t\t<passedassertions>%u</passedassertions>\n", stats.passedAssertions);
+	printf("\t\t<failedassertions>%u</failedassertions>\n", stats.failedAssertions);
+	printf("\t\t<successpercentage>%.2f</successpercentage>\n", stats.successPercentage);
+	printf("\t\t<testcases>%u</testcases>\n", stats.testCases);
+	printf("\t</statistics>\n");
 }
 
 void potency_print_report_footer_xml()
 {
-
+	printf("</potency>\n");
 }
+
+void potency_print_test_case_xml(potency_test_case* testCase)
+{
+	if (currentTestCase != testCase)
+	{
+		if (currentTestCase != NULL)
+		{
+			printf("\t</test_case>\n");
+			caseTagOpen = false;
+		}
+		currentTestCase = testCase;
+		printf("\t<test_case>\n");
+		printf("\t\t<test_case_name>%s</test_case_name>\n", testCase->name);
+		caseTagOpen = true;
+	}
+}
+
 
 void potency_print_assertion_xml(potency_test_case* testCase, const char* file, const uint32_t line, const char* expression)
 {
-	(void)testCase;
-	(void)file;
-	(void)line;
-	(void)expression;
+	potency_print_test_case_xml(testCase);
+	printf("\t\t<assertion>\n");
+	printf("\t\t\t<file>%s</file>\n", file);
+	printf("\t\t\t<line>%u</line>\n", line);
+	printf("\t\t\t<expression>CHECK(%s)</expression>\n", expression);
+	printf("\t\t</assertion>\n");
 }
 
 void potency_print_requirement_xml(potency_test_case* testCase, const char* file, const uint32_t line, const char* expression)
 {
-	(void)testCase;
-	(void)file;
-	(void)line;
-	(void)expression;
+	potency_print_test_case_xml(testCase);
+	printf("\t\t<assertion>\n");
+	printf("\t\t\t<file>%s</file>\n", file);
+	printf("\t\t\t<line>%u</line>\n", line);
+	printf("\t\t\t<expression>REQUIRE(%s)</expression>\n", expression);
+	printf("\t\t</assertion>\n");
 }
