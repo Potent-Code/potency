@@ -68,7 +68,6 @@ int main(int argc, char** argv)
 	// output mode
 	typedef enum
 	{
-		outputFormatASCII,
 		outputFormatMarkdown,
 		outputFormatJSON,
 		outputFormatXML
@@ -86,7 +85,7 @@ int main(int argc, char** argv)
 
 	// set default flags
 	flags.threads = 1;
-	flags.format = outputFormatASCII;
+	flags.format = outputFormatMarkdown;
 	flags.verboseMode = false;
 	flags.listMode = false;
 	flags.helpMode = false;
@@ -99,13 +98,7 @@ int main(int argc, char** argv)
 			// get format
 			if ((strcmp(argv[i], "-f") == 0) || (strcmp(argv[i], "--format") == 0))
 			{
-				if (strcmp(argv[i+1], "ascii") == 0)
-				{
-					flags.format = outputFormatASCII;
-					i++;
-					continue;
-				}
-				else if (strcmp(argv[i+1], "markdown") == 0)
+				if (strcmp(argv[i+1], "markdown") == 0)
 				{
 					flags.format = outputFormatMarkdown;
 					i++;
@@ -161,7 +154,7 @@ int main(int argc, char** argv)
 	{
 		printf("Usage: %s [OPTIONS]... [FILTERS]...\n", argv[0]);
 		printf("OPTIONS\n");
-		printf("  -f, --format\t\t\tSpecify output format. Must be one of ascii, markdown, json, or xml. Defaults to ascii.\n");
+		printf("  -f, --format\t\t\tSpecify output format. Must be one of markdown, json, or xml. Defaults to markdown.\n");
 		printf("  -l, --list\t\t\tList known test cases\n");
 		printf("  -t, --threads\t\t\tSpecify number of threads to run. Must be at least one, and at most the number of test cases linked\n");
 		printf("  -v, --verbose\t\t\tIncrease the amount of output\n");
@@ -186,13 +179,6 @@ int main(int argc, char** argv)
 	// setup output functions
 	switch (flags.format)
 	{
-		case outputFormatMarkdown:
-			potency_print_report_header = &potency_print_report_header_markdown;
-			potency_print_report = &potency_print_report_markdown;
-			potency_print_report_footer = &potency_print_report_footer_markdown;
-			potency_print_assertion = &potency_print_assertion_markdown;
-			potency_print_requirement = &potency_print_requirement_markdown;
-			break;
 		case outputFormatJSON:
 			potency_print_report_header = &potency_print_report_header_json;
 			potency_print_report = &potency_print_report_json;
@@ -207,13 +193,13 @@ int main(int argc, char** argv)
 			potency_print_assertion = &potency_print_assertion_xml;
 			potency_print_requirement = &potency_print_requirement_xml;
 			break;
-		case outputFormatASCII:
+		case outputFormatMarkdown:
 		default:
-			potency_print_report_header = &potency_print_report_header_ascii;
-			potency_print_report = &potency_print_report_ascii;
-			potency_print_report_footer = &potency_print_report_footer_ascii;
-			potency_print_assertion = &potency_print_assertion_ascii;
-			potency_print_requirement = &potency_print_requirement_ascii;
+			potency_print_report_header = &potency_print_report_header_markdown;
+			potency_print_report = &potency_print_report_markdown;
+			potency_print_report_footer = &potency_print_report_footer_markdown;
+			potency_print_assertion = &potency_print_assertion_markdown;
+			potency_print_requirement = &potency_print_requirement_markdown;
 			break;
 	}
 
