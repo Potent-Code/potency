@@ -2,8 +2,6 @@
 #include "report.h"
 #include "report_markdown.h"
 
-#include <string.h>
-
 static potency_test_case* currentTestCase = NULL;
 
 void potency_print_report_header_markdown(const char* testSuite)

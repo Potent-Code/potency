@@ -5,7 +5,7 @@
 #include <stdbool.h>
 
 static potency_test_case* currentTestCase = NULL;
-bool caseTagOpen = false;
+static bool caseTagOpen = false;
 
 void potency_print_report_header_xml(const char* testSuite)
 {
@@ -25,10 +25,10 @@ void potency_print_report_xml()
 
 	printf("\t<statistics>\n");
 	printf("\t\t<assertions>%u</assertions>\n", stats.assertions);
-	printf("\t\t<passedassertions>%u</passedassertions>\n", stats.passedAssertions);
-	printf("\t\t<failedassertions>%u</failedassertions>\n", stats.failedAssertions);
-	printf("\t\t<successpercentage>%.2f</successpercentage>\n", stats.successPercentage);
-	printf("\t\t<testcases>%u</testcases>\n", stats.testCases);
+	printf("\t\t<passed_assertions>%u</passed_assertions>\n", stats.passedAssertions);
+	printf("\t\t<failed_assertions>%u</failed_assertions>\n", stats.failedAssertions);
+	printf("\t\t<success_percentage>%.2f</success_percentage>\n", stats.successPercentage);
+	printf("\t\t<test_cases>%u</test_cases>\n", stats.testCases);
 	printf("\t</statistics>\n");
 }
 
