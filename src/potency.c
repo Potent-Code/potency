@@ -1,5 +1,7 @@
 #include "potency.h"
-#include "report_formats.h"
+#include "report_markdown.h"
+#include "report_json.h"
+#include "report_xml.h"
 
 #include <stdbool.h>
 #include <stdlib.h>
