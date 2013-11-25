@@ -11,6 +11,19 @@ static potency_test_case_list* testCaseHead = NULL;
 
 potency_output_function potency_print_assertion = NULL;		// output function for CHECK
 potency_output_function potency_print_requirement = NULL;	// output function for REQUIRE
+potency_setup_function potency_setup = NULL;				// user supplied set up function
+potency_teardown_function potency_teardown = NULL;			// user supplied tear down function
+
+
+void potency_add_setup_function(potency_setup_function _potency_setup)
+{
+	potency_setup = _potency_setup;
+}
+
+void potency_add_teardown_function(potency_teardown_function _potency_teardown)
+{
+	potency_teardown = _potency_teardown;
+}
 
 void potency_add_test_case( const char* name, const char* description, potency_test_case_function _run )
 {
@@ -205,6 +218,13 @@ int main(int argc, char** argv)
 			break;
 	}
 
+	// run setup function
+	void* setup_ptr = NULL;
+	if (potency_setup != NULL)
+	{
+		setup_ptr = (*potency_setup)();
+	}
+
 	// run test cases
 	(*potency_print_report_header)(argv[0]);
 	while (currentCase != NULL)
@@ -217,6 +237,12 @@ int main(int argc, char** argv)
 	// output statistics
 	(*potency_print_report)();
 	(*potency_print_report_footer)();
+
+	// run tear down function
+	if (potency_teardown != NULL)
+	{
+		(*potency_teardown)(setup_ptr);
+	}
 
 	// clean up
 	potency_cleanup_test_cases();
