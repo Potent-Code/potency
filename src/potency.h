@@ -21,6 +21,7 @@ typedef void(*potency_test_case_function)( struct _potency_test_case* );
 // output mode
 typedef enum
 {
+	outputFormatInvalid = -1,
 	outputFormatMarkdown,
 	outputFormatJSON,
 	outputFormatXML

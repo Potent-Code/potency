@@ -75,6 +75,26 @@ static void potency_cleanup_test_cases()
 	}
 }
 
+output_format get_output_format(const char* formatName)
+{
+	if ((formatName == NULL) || (strcmp(formatName, "markdown") == 0))
+	{
+		return outputFormatMarkdown;
+	}
+
+	if (strcmp(formatName, "json") == 0)
+	{
+		return outputFormatJSON;
+	}
+
+	if (strcmp(formatName, "xml") == 0)
+	{
+		return outputFormatXML;
+	}
+
+	return outputFormatInvalid;
+}
+
 int main(int argc, char** argv)
 {
 	int i;
@@ -85,12 +105,16 @@ int main(int argc, char** argv)
 
 	// set default potencySettings
 	potencySettings.threads = 1;
-	potencySettings.format = outputFormatMarkdown;
+	potencySettings.format = get_output_format(getenv("POTENCY_OUTPUT_FORMAT"));
 	potencySettings.outputFile = NULL;
 	potencySettings.verboseMode = false;
 	potencySettings.listMode = false;
 	potencySettings.helpMode = false;
 	potencySettings.filteringOn = false;
+	if (potencySettings.format == outputFormatInvalid)
+	{
+		potencySettings.format = outputFormatMarkdown;
+	}
 
 	// process command line arguments
 	for (i = 1; i < argc; i++)
@@ -100,29 +124,14 @@ int main(int argc, char** argv)
 			// get format
 			if ((strcmp(argv[i], "-f") == 0) || (strcmp(argv[i], "--format") == 0))
 			{
-				if (strcmp(argv[i + 1], "markdown") == 0)
-				{
-					potencySettings.format = outputFormatMarkdown;
-					i++;
-					continue;
-				}
-				else if (strcmp(argv[i+1], "json") == 0)
-				{
-					potencySettings.format = outputFormatJSON;
-					i++;
-					continue;
-				}
-				else if (strcmp(argv[i+1], "xml") == 0)
-				{
-					potencySettings.format = outputFormatXML;
-					i++;
-					continue;
-				}
-				else
+				potencySettings.format = get_output_format(argv[i + 1]);
+
+				if (potencySettings.format == outputFormatInvalid)
 				{
 					potencySettings.helpMode = true;
-					break;
 				}
+
+				break;
 			}
 			else if ((strcmp(argv[i], "-l") == 0) || (strcmp(argv[i], "--list") == 0))
 			{
