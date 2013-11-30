@@ -19,7 +19,7 @@ void potency_print_report_markdown()
 	printf("> *  Passed Assertions: %u\n", stats.passedAssertions);
 	printf("> *  Failed Assertions: %u\n", stats.failedAssertions);
 	printf("> *  Total Assertions: %u\n", stats.assertions);
-	printf("> *  Test Cases: %u\n", stats.testCases);
+	printf("> *  Test Cases: %u/%u\n", stats.testCasesRan, stats.testCases);
 }
 
 void potency_print_report_footer_markdown()

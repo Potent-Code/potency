@@ -1,6 +1,7 @@
 #ifndef potency_h
 #define potency_h
 
+#include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
 
@@ -17,12 +18,34 @@
 struct _potency_test_case;
 typedef void(*potency_test_case_function)( struct _potency_test_case* );
 
+// output mode
+typedef enum
+{
+	outputFormatMarkdown,
+	outputFormatJSON,
+	outputFormatXML
+} output_format;
+
+// run mode settings, usually given by command line arguments
+typedef struct _potency_settings
+{
+	size_t threads;			// number of threads to run test cases
+	output_format format;	// what format to generate report in
+	bool verboseMode;		// print extra output
+	bool listMode;			// should we just list test cases and exit?
+	bool helpMode;			// print the help screen
+	bool filteringOn;		// true if we find any filters
+} potency_settings;
+
+extern potency_settings potencySettings;
+
 // struct _potency_test_case is used to contain all data associated with a test case
 typedef struct _potency_test_case
 {
 	const char* name;
 	const char* description;
 	potency_test_case_function run;
+	bool runTestCase;
 	uint32_t assertions;
 	uint32_t passedAssertions;
 	double runTime;
@@ -91,25 +114,5 @@ extern potency_output_function potency_print_requirement;
 		(*potency_print_requirement)(testCase, __FILE__, __LINE__, #expression);\
 		return;\
 	}
-
-/*
-#define CHECK(expression)\
-	testCase->assertions++;\
-	if (expression)\
-	{\
-		testCase->passedAssertions++;\
-	}\
-	else\
-	{\
-		printf("*** %s assertion failed: CHECK(%s)\n", potency_line_info(), #expression);\
-	}
-
-#define REQUIRE(expression)\
-	if (!expression)\
-	{\
-		printf("!!! %s assertion failed: REQUIRE(%s)\n", potency_line_info(), #expression);\
-		return;\
-	}
-*/
 
 #endif // !potency_h
