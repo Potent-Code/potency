@@ -75,7 +75,7 @@ static void potency_cleanup_test_cases()
 	}
 }
 
-output_format get_output_format(const char* formatName)
+output_format potency_get_output_format(const char* formatName)
 {
 	if ((formatName == NULL) || (strcmp(formatName, "markdown") == 0))
 	{
@@ -105,7 +105,7 @@ int main(int argc, char** argv)
 
 	// set default potencySettings
 	potencySettings.threads = 1;
-	potencySettings.format = get_output_format(getenv("POTENCY_OUTPUT_FORMAT"));
+	potencySettings.format = potency_get_output_format(getenv("POTENCY_OUTPUT_FORMAT"));
 	potencySettings.outputFile = NULL;
 	potencySettings.verboseMode = false;
 	potencySettings.listMode = false;
@@ -124,14 +124,14 @@ int main(int argc, char** argv)
 			// get format
 			if ((strcmp(argv[i], "-f") == 0) || (strcmp(argv[i], "--format") == 0))
 			{
-				potencySettings.format = get_output_format(argv[i + 1]);
+				potencySettings.format = potency_get_output_format(argv[i + 1]);
 
 				if (potencySettings.format == outputFormatInvalid)
 				{
 					potencySettings.helpMode = true;
 				}
-
-				break;
+				i++;
+				continue;
 			}
 			else if ((strcmp(argv[i], "-l") == 0) || (strcmp(argv[i], "--list") == 0))
 			{
@@ -146,7 +146,7 @@ int main(int argc, char** argv)
 			}
 			else if ((strcmp(argv[i], "-t") == 0) || (strcmp(argv[i], "--threads") == 0))
 			{
-				potencySettings.threads = atoi(argv[i+1]);
+				potencySettings.threads = atoi(argv[i + 1]);
 				i++;
 				continue;
 			}

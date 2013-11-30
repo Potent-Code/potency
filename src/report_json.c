@@ -2,6 +2,7 @@
 #include "report.h"
 #include "report_json.h"
 
+#include <time.h>
 #include <stdbool.h>
 
 static potency_test_case* currentTestCase = NULL;
@@ -12,7 +13,7 @@ void potency_print_report_header_json(const char* testSuite)
 {
 	fprintf(reportFileHandle, "{\n");
 	fprintf(reportFileHandle, "\t\"test_suite\":\"%s\",\n", testSuite);
-	(void)testSuite;
+	fprintf(reportFileHandle, "\t\"time\":%llu,\n", (unsigned long long)time(NULL));
 }
 
 void potency_print_report_json()

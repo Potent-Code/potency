@@ -2,11 +2,18 @@
 #include "report.h"
 #include "report_markdown.h"
 
+#include <time.h>
+#include <string.h>
+
 static potency_test_case* currentTestCase = NULL;
 
 void potency_print_report_header_markdown(const char* testSuite)
 {
-	fprintf(reportFileHandle, "# %s #  \n  \n", testSuite);
+	time_t currentTime = time(NULL);
+	const char* currentTimeString = ctime(&currentTime);
+
+	fprintf(reportFileHandle, "# %s #\n", testSuite);
+	fprintf(reportFileHandle, "> %.*s  \n  \n", (int)strlen(currentTimeString) - 1, currentTimeString);
 }
 
 void potency_print_report_markdown()

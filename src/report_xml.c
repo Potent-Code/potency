@@ -2,6 +2,7 @@
 #include "report.h"
 #include "report_xml.h"
 
+#include <time.h>
 #include <stdbool.h>
 
 static potency_test_case* currentTestCase = NULL;
@@ -11,6 +12,7 @@ void potency_print_report_header_xml(const char* testSuite)
 {
 	fprintf(reportFileHandle, "<potency>\n");
 	fprintf(reportFileHandle, "\t<test_suite>%s</test_suite>\n", testSuite);
+	fprintf(reportFileHandle, "\t<time>%llu</time>\n", (unsigned long long)time(NULL));
 }
 
 void potency_print_report_xml()
