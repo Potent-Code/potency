@@ -3,6 +3,7 @@
 #include "report_json.h"
 #include "report_xml.h"
 
+#include <errno.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -12,6 +13,7 @@ potency_output_function potency_print_assertion = NULL;		// output function for 
 potency_output_function potency_print_requirement = NULL;	// output function for REQUIRE
 potency_setup_function potency_setup = NULL;				// user supplied set up function
 potency_teardown_function potency_teardown = NULL;			// user supplied tear down function
+FILE* reportFileHandle = NULL;								// file handle to output report to
 
 potency_settings potencySettings;
 
@@ -73,6 +75,26 @@ static void potency_cleanup_test_cases()
 	}
 }
 
+output_format potency_get_output_format(const char* formatName)
+{
+	if ((formatName == NULL) || (strcmp(formatName, "markdown") == 0))
+	{
+		return outputFormatMarkdown;
+	}
+
+	if (strcmp(formatName, "json") == 0)
+	{
+		return outputFormatJSON;
+	}
+
+	if (strcmp(formatName, "xml") == 0)
+	{
+		return outputFormatXML;
+	}
+
+	return outputFormatInvalid;
+}
+
 int main(int argc, char** argv)
 {
 	int i;
@@ -83,11 +105,16 @@ int main(int argc, char** argv)
 
 	// set default potencySettings
 	potencySettings.threads = 1;
-	potencySettings.format = outputFormatMarkdown;
+	potencySettings.format = potency_get_output_format(getenv("POTENCY_OUTPUT_FORMAT"));
+	potencySettings.outputFile = NULL;
 	potencySettings.verboseMode = false;
 	potencySettings.listMode = false;
 	potencySettings.helpMode = false;
 	potencySettings.filteringOn = false;
+	if (potencySettings.format == outputFormatInvalid)
+	{
+		potencySettings.format = outputFormatMarkdown;
+	}
 
 	// process command line arguments
 	for (i = 1; i < argc; i++)
@@ -97,38 +124,29 @@ int main(int argc, char** argv)
 			// get format
 			if ((strcmp(argv[i], "-f") == 0) || (strcmp(argv[i], "--format") == 0))
 			{
-				if (strcmp(argv[i+1], "markdown") == 0)
-				{
-					potencySettings.format = outputFormatMarkdown;
-					i++;
-					continue;
-				}
-				else if (strcmp(argv[i+1], "json") == 0)
-				{
-					potencySettings.format = outputFormatJSON;
-					i++;
-					continue;
-				}
-				else if (strcmp(argv[i+1], "xml") == 0)
-				{
-					potencySettings.format = outputFormatXML;
-					i++;
-					continue;
-				}
-				else
+				potencySettings.format = potency_get_output_format(argv[i + 1]);
+
+				if (potencySettings.format == outputFormatInvalid)
 				{
 					potencySettings.helpMode = true;
-					break;
 				}
+				i++;
+				continue;
 			}
 			else if ((strcmp(argv[i], "-l") == 0) || (strcmp(argv[i], "--list") == 0))
 			{
 				potencySettings.listMode = true;
 				// we don't break here in case help mode is actually desired
 			}
+			else if ((strcmp(argv[i], "-o") == 0) || (strcmp(argv[i], "--output") == 0))
+			{
+				potencySettings.outputFile = argv[i + 1];
+				i++;
+				continue;
+			}
 			else if ((strcmp(argv[i], "-t") == 0) || (strcmp(argv[i], "--threads") == 0))
 			{
-				potencySettings.threads = atoi(argv[i+1]);
+				potencySettings.threads = atoi(argv[i + 1]);
 				i++;
 				continue;
 			}
@@ -166,6 +184,7 @@ int main(int argc, char** argv)
 		printf("OPTIONS\n");
 		printf("  -f, --format\t\t\tSpecify output format. Must be one of markdown, json, or xml. Defaults to markdown.\n");
 		printf("  -l, --list\t\t\tList known test cases\n");
+		printf("  -o, --output\t\t\tOutput report to a file instead of standard output\n");
 		printf("  -t, --threads\t\t\tSpecify number of threads to run. Must be at least one, and at most the number of test cases linked\n");
 		printf("  -v, --verbose\t\t\tIncrease the amount of output\n");
 		printf("  -h, --help\t\t\tThis help screen\n");
@@ -173,6 +192,7 @@ int main(int argc, char** argv)
 		printf("  If any arguments are passed that do not begin with -, they are considered filters.\n");
 		printf("  If no filters are supplied, all test cases will be executed. Otherwise, only test cases\n");
 		printf("  whose names match at least one filter will be executed.\n");
+		potency_cleanup_test_cases();
 		return 0;
 	}
 
@@ -183,6 +203,7 @@ int main(int argc, char** argv)
 			printf("%-30s* %s\n", currentCase->testCase->name, currentCase->testCase->description);
 			currentCase = currentCase->next;
 		}
+		potency_cleanup_test_cases();
 		return 0;
 	}
 
@@ -216,6 +237,22 @@ int main(int argc, char** argv)
 	// reset the current test case
 	currentCase = potency_get_test_case_list();
 
+	if (potencySettings.outputFile != NULL)
+	{
+		reportFileHandle = fopen(potencySettings.outputFile, "w+");
+		if (reportFileHandle == NULL)
+		{
+			perror("Error - failed to open output file");
+			potency_cleanup_test_cases();
+			return 1;
+		}
+	}
+	else
+	{
+		// default to standard output
+		reportFileHandle = stdout;
+	}
+
 	// run setup function
 	void* setup_ptr = NULL;
 	if (potency_setup != NULL)
@@ -243,6 +280,12 @@ int main(int argc, char** argv)
 	if (potency_teardown != NULL)
 	{
 		(*potency_teardown)(setup_ptr);
+	}
+
+	// close output report file handle
+	if (reportFileHandle != stdout)
+	{
+		fclose(reportFileHandle);
 	}
 
 	// clean up
