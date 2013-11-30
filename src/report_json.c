@@ -1,3 +1,4 @@
+#include "potency.h"
 #include "report.h"
 #include "report_json.h"
 
@@ -9,8 +10,8 @@ static bool caseTagOpen = false;
 
 void potency_print_report_header_json(const char* testSuite)
 {
-	printf("{\n");
-	printf("\t\"test_suite\":\"%s\",\n", testSuite);
+	fprintf(reportFileHandle, "{\n");
+	fprintf(reportFileHandle, "\t\"test_suite\":\"%s\",\n", testSuite);
 	(void)testSuite;
 }
 
@@ -21,21 +22,21 @@ void potency_print_report_json()
 
 	if (testCasesArray)
 	{
-		printf("\n\t],\n");
+		fprintf(reportFileHandle, "\n\t],\n");
 	}
 
-	printf("\t\"statistics\": {\n");
-	printf("\t\t\"test_cases\": \"%u/%u\",\n", stats.testCasesRan, stats.testCases);
-	printf("\t\t\"assertions\": %u,\n", stats.assertions);
-	printf("\t\t\"passed_assertions\": %u,\n", stats.passedAssertions);
-	printf("\t\t\"failed_assertions\": %u,\n", stats.failedAssertions);
-	printf("\t\t\"success_percentage\": %.2f\n", stats.successPercentage);
-	printf("\t}\n");
+	fprintf(reportFileHandle, "\t\"statistics\": {\n");
+	fprintf(reportFileHandle, "\t\t\"test_cases\": \"%u/%u\",\n", stats.testCasesRan, stats.testCases);
+	fprintf(reportFileHandle, "\t\t\"assertions\": %u,\n", stats.assertions);
+	fprintf(reportFileHandle, "\t\t\"passed_assertions\": %u,\n", stats.passedAssertions);
+	fprintf(reportFileHandle, "\t\t\"failed_assertions\": %u,\n", stats.failedAssertions);
+	fprintf(reportFileHandle, "\t\t\"success_percentage\": %.2f\n", stats.successPercentage);
+	fprintf(reportFileHandle, "\t}\n");
 }
 
 void potency_print_report_footer_json()
 {
-	printf("}\n");
+	fprintf(reportFileHandle, "}\n");
 }
 
 void potency_print_test_case_json(potency_test_case* testCase)
@@ -44,7 +45,7 @@ void potency_print_test_case_json(potency_test_case* testCase)
 	{
 		if (currentTestCase == NULL)
 		{
-			printf("\t\"test_cases\": [\n");
+			fprintf(reportFileHandle, "\t\"test_cases\": [\n");
 			testCasesArray = true;
 			caseTagOpen = false;
 		}
@@ -61,15 +62,15 @@ void potency_print_assertion_json(potency_test_case* testCase, const char* file,
 	potency_print_test_case_json(testCase);
 	if (caseTagOpen)
 	{
-		printf(",\n");
+		fprintf(reportFileHandle, ",\n");
 	}
-	printf("\t\t{\n");
-	printf("\t\t\t\"assertion\": {\n");
-	printf("\t\t\t\t\"file\": \"%s\",\n", file);
-	printf("\t\t\t\t\"line\": %u,\n", line);
-	printf("\t\t\t\t\"expression\": \"CHECK(%s)\"\n", expression);
-	printf("\t\t\t}\n");
-	printf("\t\t}");
+	fprintf(reportFileHandle, "\t\t{\n");
+	fprintf(reportFileHandle, "\t\t\t\"assertion\": {\n");
+	fprintf(reportFileHandle, "\t\t\t\t\"file\": \"%s\",\n", file);
+	fprintf(reportFileHandle, "\t\t\t\t\"line\": %u,\n", line);
+	fprintf(reportFileHandle, "\t\t\t\t\"expression\": \"CHECK(%s)\"\n", expression);
+	fprintf(reportFileHandle, "\t\t\t}\n");
+	fprintf(reportFileHandle, "\t\t}");
 }
 
 void potency_print_requirement_json(potency_test_case* testCase, const char* file, const uint32_t line, const char* expression)
@@ -77,13 +78,13 @@ void potency_print_requirement_json(potency_test_case* testCase, const char* fil
 	potency_print_test_case_json(testCase);
 	if (caseTagOpen)
 	{
-		printf(",\n");
+		fprintf(reportFileHandle, ",\n");
 	}
-	printf("\t\t{\n");
-	printf("\t\t\t\"assertion\": {\n");
-	printf("\t\t\t\t\"file\": \"%s\",\n", file);
-	printf("\t\t\t\t\"line\": %u,\n", line);
-	printf("\t\t\t\t\"expression\": \"REQUIRE(%s)\"\n", expression);
-	printf("\t\t\t}\n");
-	printf("\t\t}");
+	fprintf(reportFileHandle, "\t\t{\n");
+	fprintf(reportFileHandle, "\t\t\t\"assertion\": {\n");
+	fprintf(reportFileHandle, "\t\t\t\t\"file\": \"%s\",\n", file);
+	fprintf(reportFileHandle, "\t\t\t\t\"line\": %u,\n", line);
+	fprintf(reportFileHandle, "\t\t\t\t\"expression\": \"REQUIRE(%s)\"\n", expression);
+	fprintf(reportFileHandle, "\t\t\t}\n");
+	fprintf(reportFileHandle, "\t\t}");
 }

@@ -31,6 +31,7 @@ typedef struct _potency_settings
 {
 	size_t threads;			// number of threads to run test cases
 	output_format format;	// what format to generate report in
+	const char* outputFile;	// file to save report to
 	bool verboseMode;		// print extra output
 	bool listMode;			// should we just list test cases and exit?
 	bool helpMode;			// print the help screen
@@ -71,6 +72,8 @@ extern void potency_add_test_case( const char* name, const char* description, co
 extern potency_test_case_list* potency_get_test_case_list();
 extern potency_output_function potency_print_assertion;
 extern potency_output_function potency_print_requirement;
+
+extern FILE* reportFileHandle;
 
 #define POTENCY_SETUP(function)\
 	static void potency_unique_name( potency_setup_ )() __attribute__((constructor)); \
