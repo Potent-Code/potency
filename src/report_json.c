@@ -25,7 +25,7 @@ void potency_print_report_json()
 	}
 
 	printf("\t\"statistics\": {\n");
-	printf("\t\t\"test_cases\": %u,\n", stats.testCases);
+	printf("\t\t\"test_cases\": \"%u/%u\",\n", stats.testCasesRan, stats.testCases);
 	printf("\t\t\"assertions\": %u,\n", stats.assertions);
 	printf("\t\t\"passed_assertions\": %u,\n", stats.passedAssertions);
 	printf("\t\t\"failed_assertions\": %u,\n", stats.failedAssertions);
@@ -75,7 +75,15 @@ void potency_print_assertion_json(potency_test_case* testCase, const char* file,
 void potency_print_requirement_json(potency_test_case* testCase, const char* file, const uint32_t line, const char* expression)
 {
 	potency_print_test_case_json(testCase);
-	(void)file;
-	(void)line;
-	(void)expression;
+	if (caseTagOpen)
+	{
+		printf(",\n");
+	}
+	printf("\t\t{\n");
+	printf("\t\t\t\"assertion\": {\n");
+	printf("\t\t\t\t\"file\": \"%s\",\n", file);
+	printf("\t\t\t\t\"line\": %u,\n", line);
+	printf("\t\t\t\t\"expression\": \"REQUIRE(%s)\"\n", expression);
+	printf("\t\t\t}\n");
+	printf("\t\t}");
 }

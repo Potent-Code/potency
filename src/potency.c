@@ -3,7 +3,6 @@
 #include "report_json.h"
 #include "report_xml.h"
 
-#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -14,6 +13,7 @@ potency_output_function potency_print_requirement = NULL;	// output function for
 potency_setup_function potency_setup = NULL;				// user supplied set up function
 potency_teardown_function potency_teardown = NULL;			// user supplied tear down function
 
+potency_settings potencySettings;
 
 void potency_add_setup_function(potency_setup_function _potency_setup)
 {
@@ -31,6 +31,7 @@ void potency_add_test_case( const char* name, const char* description, potency_t
 	newTestCase->name = name;
 	newTestCase->description = description;
 	newTestCase->run = _run;
+	newTestCase->runTestCase = false;
 
 	if (testCaseHead == NULL)
 	{
@@ -80,33 +81,16 @@ int main(int argc, char** argv)
 	void(*potency_print_report_header)(const char*) = NULL;
 	void(*potency_print_report_footer)() = NULL;
 
-	// output mode
-	typedef enum
-	{
-		outputFormatMarkdown,
-		outputFormatJSON,
-		outputFormatXML
-	} output_format;
-
-	// command line arguments that begin with - represent flags
-	struct _flags
-	{
-		size_t threads;			// number of threads to run test cases
-		output_format format;	// what format to generate report in
-		bool verboseMode;		// print extra output
-		bool listMode;			// should we just list test cases and exit?
-		bool helpMode;			// print the help screen
-	} flags;
-
-	// set default flags
-	flags.threads = 1;
-	flags.format = outputFormatMarkdown;
-	flags.verboseMode = false;
-	flags.listMode = false;
-	flags.helpMode = false;
+	// set default potencySettings
+	potencySettings.threads = 1;
+	potencySettings.format = outputFormatMarkdown;
+	potencySettings.verboseMode = false;
+	potencySettings.listMode = false;
+	potencySettings.helpMode = false;
+	potencySettings.filteringOn = false;
 
 	// process command line arguments
-	for (i = 0; i < argc; i++)
+	for (i = 1; i < argc; i++)
 	{
 		if (argv[i][0] == '-')
 		{
@@ -115,57 +99,68 @@ int main(int argc, char** argv)
 			{
 				if (strcmp(argv[i+1], "markdown") == 0)
 				{
-					flags.format = outputFormatMarkdown;
+					potencySettings.format = outputFormatMarkdown;
 					i++;
 					continue;
 				}
 				else if (strcmp(argv[i+1], "json") == 0)
 				{
-					flags.format = outputFormatJSON;
+					potencySettings.format = outputFormatJSON;
 					i++;
 					continue;
 				}
 				else if (strcmp(argv[i+1], "xml") == 0)
 				{
-					flags.format = outputFormatXML;
+					potencySettings.format = outputFormatXML;
 					i++;
 					continue;
 				}
 				else
 				{
-					flags.helpMode = true;
+					potencySettings.helpMode = true;
 					break;
 				}
 			}
 			else if ((strcmp(argv[i], "-l") == 0) || (strcmp(argv[i], "--list") == 0))
 			{
-				flags.listMode = true;
+				potencySettings.listMode = true;
 				// we don't break here in case help mode is actually desired
 			}
 			else if ((strcmp(argv[i], "-t") == 0) || (strcmp(argv[i], "--threads") == 0))
 			{
-				flags.threads = atoi(argv[i+1]);
+				potencySettings.threads = atoi(argv[i+1]);
 				i++;
 				continue;
 			}
 			else if ((strcmp(argv[i], "-v") == 0) || (strcmp(argv[i], "--verbose") == 0))
 			{
-				flags.verboseMode = true;
+				potencySettings.verboseMode = true;
 			}
 			else
 			{
-				flags.helpMode = true;
+				potencySettings.helpMode = true;
 				break;
 			}
 		}
 		else
 		{
-			// process filters
+			potencySettings.filteringOn = true;
+
+			potency_test_case_list* _currentCase = currentCase;
+			while (currentCase != NULL)
+			{
+				if (strstr(currentCase->testCase->name, argv[i]) != NULL)
+				{
+					currentCase->testCase->runTestCase = true;
+				}
+				currentCase = currentCase->next;
+			}
+			currentCase = _currentCase;
 		}
 	}
 
 	// check if we need to print a help screen and exit
-	if (flags.helpMode)
+	if (potencySettings.helpMode)
 	{
 		printf("Usage: %s [OPTIONS]... [FILTERS]...\n", argv[0]);
 		printf("OPTIONS\n");
@@ -181,7 +176,7 @@ int main(int argc, char** argv)
 		return 0;
 	}
 
-	if (flags.listMode)
+	if (potencySettings.listMode)
 	{
 		while (currentCase != NULL)
 		{
@@ -192,7 +187,7 @@ int main(int argc, char** argv)
 	}
 
 	// setup output functions
-	switch (flags.format)
+	switch (potencySettings.format)
 	{
 		case outputFormatJSON:
 			potency_print_report_header = &potency_print_report_header_json;
@@ -218,6 +213,9 @@ int main(int argc, char** argv)
 			break;
 	}
 
+	// reset the current test case
+	currentCase = potency_get_test_case_list();
+
 	// run setup function
 	void* setup_ptr = NULL;
 	if (potency_setup != NULL)
@@ -229,7 +227,10 @@ int main(int argc, char** argv)
 	(*potency_print_report_header)(argv[0]);
 	while (currentCase != NULL)
 	{
-		currentCase->testCase->run(currentCase->testCase);
+		if (!potencySettings.filteringOn || (potencySettings.filteringOn && currentCase->testCase->runTestCase))
+		{
+			currentCase->testCase->run(currentCase->testCase);
+		}
 
 		currentCase = currentCase->next;
 	}

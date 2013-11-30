@@ -28,7 +28,7 @@ void potency_print_report_xml()
 	printf("\t\t<passed_assertions>%u</passed_assertions>\n", stats.passedAssertions);
 	printf("\t\t<failed_assertions>%u</failed_assertions>\n", stats.failedAssertions);
 	printf("\t\t<success_percentage>%.2f</success_percentage>\n", stats.successPercentage);
-	printf("\t\t<test_cases>%u</test_cases>\n", stats.testCases);
+	printf("\t\t<test_cases>%u/%u</test_cases>\n", stats.testCasesRan, stats.testCases);
 	printf("\t</statistics>\n");
 }
 
