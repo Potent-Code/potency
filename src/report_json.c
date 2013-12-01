@@ -45,6 +45,32 @@ void potency_print_report_header_json(const char* testSuite)
 	fprintf(reportFileHandle, "\t\"time\":%llu,\n", (unsigned long long)time(NULL));
 }
 
+void potency_print_benchmarks_json()
+{
+	potency_test_case_list* currentTestCase = potency_get_test_case_list();
+	const size_t escapedJSONLength = 4096;
+	char escapedJSON[escapedJSONLength];
+
+	fprintf(reportFileHandle, "\t\"benchmarks\": {\n");
+
+	bool benchmarkTagOpen = false;
+	while (currentTestCase != NULL)
+	{
+		if (!potencySettings.filteringOn || currentTestCase->testCase->runTestCase)
+		{
+			if (benchmarkTagOpen)
+			{
+				fprintf(reportFileHandle, ",\n");
+			}
+
+			fprintf(reportFileHandle, "\t\t\"%s\": %g", potency_escape_json(currentTestCase->testCase->name, escapedJSON, escapedJSONLength), currentTestCase->testCase->runTime);
+			benchmarkTagOpen = true;
+		}
+		currentTestCase = currentTestCase->next;
+	}
+	fprintf(reportFileHandle, "\n\t},\n");
+}
+
 void potency_print_report_json()
 {
 	test_statistics stats;
@@ -54,6 +80,8 @@ void potency_print_report_json()
 	{
 		fprintf(reportFileHandle, "\n\t],\n");
 	}
+
+	potency_print_benchmarks_json();
 
 	fprintf(reportFileHandle, "\t\"statistics\": {\n");
 	fprintf(reportFileHandle, "\t\t\"test_cases\": \"%u/%u\",\n", stats.testCasesRan, stats.testCases);
