@@ -65,10 +65,6 @@ void potency_print_benchmarks_json()
 
 			fprintf(reportFileHandle, "\t\t\"%s\": %g", potency_escape_json(currentTestCase->testCase->name, escapedJSON, escapedJSONLength), currentTestCase->testCase->runTime);
 			benchmarkTagOpen = true;
-			// fprintf(reportFileHandle, "\t\t<test_case>\n");
-			// fprintf(reportFileHandle, "\t\t\t<test_case_name>%s</test_case_name>\n", potency_escape_xml(currentTestCase->testCase->name, escapedXML, escapedXMLLength));
-			// fprintf(reportFileHandle, "\t\t\t<run_time>%g</run_time>\n", currentTestCase->testCase->runTime);
-			// fprintf(reportFileHandle, "\t\t</test_case>\n");
 		}
 		currentTestCase = currentTestCase->next;
 	}
