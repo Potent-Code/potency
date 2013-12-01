@@ -4,15 +4,44 @@
 
 #include <time.h>
 #include <stdbool.h>
+#include <string.h>
 
 static potency_test_case* currentTestCase = NULL;
 bool testCasesArray = false;
 static bool caseTagOpen = false;
 
+char* potency_escape_json(const char* unescaped, char* escaped, const size_t escapedLength)
+{
+	size_t i = 0;
+	size_t j = 0;
+
+	for (i = 0; (i < strlen(unescaped)) && (j < (escapedLength - 3)); i++)
+	{
+		// escape codes at http://www.json.org/
+		switch(unescaped[i])
+		{
+			case '\\':
+			case '"':
+				escaped[j++] = '\\';
+				escaped[j++] = unescaped[i];
+				break;
+			default:
+				escaped[j++] = unescaped[i];
+		}
+	}
+
+	// null terminate
+	escaped[j] = 0;
+
+	return escaped;
+}
+
 void potency_print_report_header_json(const char* testSuite)
 {
+	const size_t escapedJSONLength = 4096;
+	char escapedJSON[escapedJSONLength];
 	fprintf(reportFileHandle, "{\n");
-	fprintf(reportFileHandle, "\t\"test_suite\":\"%s\",\n", testSuite);
+	fprintf(reportFileHandle, "\t\"test_suite\":\"%s\",\n", potency_escape_json(testSuite, escapedJSON, escapedJSONLength));
 	fprintf(reportFileHandle, "\t\"time\":%llu,\n", (unsigned long long)time(NULL));
 }
 
@@ -65,11 +94,15 @@ void potency_print_assertion_json(potency_test_case* testCase, const char* file,
 	{
 		fprintf(reportFileHandle, ",\n");
 	}
+
+	const size_t escapedJSONLength = 4096;
+	char escapedJSON[escapedJSONLength];
+
 	fprintf(reportFileHandle, "\t\t{\n");
 	fprintf(reportFileHandle, "\t\t\t\"assertion\": {\n");
-	fprintf(reportFileHandle, "\t\t\t\t\"file\": \"%s\",\n", file);
+	fprintf(reportFileHandle, "\t\t\t\t\"file\": \"%s\",\n", potency_escape_json(file, escapedJSON, escapedJSONLength));
 	fprintf(reportFileHandle, "\t\t\t\t\"line\": %u,\n", line);
-	fprintf(reportFileHandle, "\t\t\t\t\"expression\": \"CHECK(%s)\"\n", expression);
+	fprintf(reportFileHandle, "\t\t\t\t\"expression\": \"CHECK(%s)\"\n", potency_escape_json(expression, escapedJSON, escapedJSONLength));
 	fprintf(reportFileHandle, "\t\t\t}\n");
 	fprintf(reportFileHandle, "\t\t}");
 }
@@ -81,11 +114,15 @@ void potency_print_requirement_json(potency_test_case* testCase, const char* fil
 	{
 		fprintf(reportFileHandle, ",\n");
 	}
+
+	const size_t escapedJSONLength = 4096;
+	char escapedJSON[escapedJSONLength];
+
 	fprintf(reportFileHandle, "\t\t{\n");
 	fprintf(reportFileHandle, "\t\t\t\"assertion\": {\n");
-	fprintf(reportFileHandle, "\t\t\t\t\"file\": \"%s\",\n", file);
+	fprintf(reportFileHandle, "\t\t\t\t\"file\": \"%s\",\n", potency_escape_json(file, escapedJSON, escapedJSONLength));
 	fprintf(reportFileHandle, "\t\t\t\t\"line\": %u,\n", line);
-	fprintf(reportFileHandle, "\t\t\t\t\"expression\": \"REQUIRE(%s)\"\n", expression);
+	fprintf(reportFileHandle, "\t\t\t\t\"expression\": \"REQUIRE(%s)\"\n", potency_escape_json(expression, escapedJSON, escapedJSONLength));
 	fprintf(reportFileHandle, "\t\t\t}\n");
 	fprintf(reportFileHandle, "\t\t}");
 }
