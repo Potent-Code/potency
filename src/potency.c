@@ -1,4 +1,5 @@
 #include "potency.h"
+#include "benchmark.h"
 #include "report_markdown.h"
 #include "report_json.h"
 #include "report_xml.h"
@@ -34,6 +35,7 @@ void potency_add_test_case( const char* name, const char* description, potency_t
 	newTestCase->description = description;
 	newTestCase->run = _run;
 	newTestCase->runTestCase = false;
+	newTestCase->runTime = 0.0;
 
 	if (testCaseHead == NULL)
 	{
@@ -266,7 +268,9 @@ int main(int argc, char** argv)
 	{
 		if (!potencySettings.filteringOn || (potencySettings.filteringOn && currentCase->testCase->runTestCase))
 		{
+			double startTime = potency_get_time();
 			currentCase->testCase->run(currentCase->testCase);
+			currentCase->testCase->runTime = potency_get_time() - startTime;
 		}
 
 		currentCase = currentCase->next;
