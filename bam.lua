@@ -13,7 +13,6 @@ settings.cc.flags:Add("-Wall -Wextra -Werror")
 settings.cc.flags:Add("-fPIC")
 
 -- output objects to obj directory
-ExecuteSilent("mkdir obj")
 settings.cc.Output = function(settings, input)
 	return objectPath .. PathFilename(PathBase(input))
 end
@@ -36,7 +35,6 @@ settings.link.libpath:Add(".")
 settings.link.libs:Add("potency")
 
 -- output objects to obj directory
-ExecuteSilent("mkdir obj/test")
 settings.cc.Output = function(settings, input)
 	return testObjectPath .. PathFilename(PathBase(input))
 end
