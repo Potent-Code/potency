@@ -7,12 +7,12 @@
 
 static potency_test_case* currentTestCase = NULL;
 
-char* potency_escape_markdown(const char* unescaped, char* escaped, size_t escapedLength)
+char* potency_escape_markdown(const char* unescaped, char* escaped, const size_t escapedLength)
 {
 	size_t i = 0;
 	size_t j = 0;
 
-	for (i = 0; (i < strlen(unescaped)) && (j < (escapedLength - 1)); i++)
+	for (i = 0; (i < strlen(unescaped)) && (j < (escapedLength - 3)); i++)
 	{
 		// escape codes at http://daringfireball.net/projects/markdown/syntax#backslash
 		switch(unescaped[i])
@@ -47,12 +47,12 @@ char* potency_escape_markdown(const char* unescaped, char* escaped, size_t escap
 }
 
 // special function for escaping markdown only inside of backticks
-char* potency_escape_markdown_backticks(const char* unescaped, char* escaped, size_t escapedLength)
+char* potency_escape_markdown_backticks(const char* unescaped, char* escaped, const size_t escapedLength)
 {
 	size_t i = 0;
 	size_t j = 0;
 
-	for (i = 0; (i < strlen(unescaped)) && (j < (escapedLength - 1)); i++)
+	for (i = 0; (i < strlen(unescaped)) && (j < (escapedLength - 14)); i++)
 	{
 		// escape codes at http://daringfireball.net/projects/markdown/syntax#backslash
 		switch(unescaped[i])
