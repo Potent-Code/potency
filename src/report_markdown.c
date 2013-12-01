@@ -98,8 +98,27 @@ void potency_print_report_header_markdown(const char* testSuite)
 	fprintf(reportFileHandle, "> %.*s  \n  \n", (int)strlen(currentTimeString) - 1, potency_escape_markdown(currentTimeString, escapedMarkdown, escapedMarkdownLength));
 }
 
+void potency_print_benchmarks_markdown()
+{
+	potency_test_case_list* currentTestCase = potency_get_test_case_list();
+	const size_t escapedMarkdownLength = 4096;
+	char escapedMarkdown[escapedMarkdownLength];
+
+	fprintf(reportFileHandle, "\n## Benchmarks ##\n");
+	while (currentTestCase != NULL)
+	{
+		if (!potencySettings.filteringOn || currentTestCase->testCase->runTestCase)
+		{
+			fprintf(reportFileHandle, "> 1.  **%s**: %gs\n", potency_escape_markdown(currentTestCase->testCase->name, escapedMarkdown, escapedMarkdownLength), currentTestCase->testCase->runTime);
+		}
+		currentTestCase = currentTestCase->next;
+	}
+}
+
 void potency_print_report_markdown()
 {
+	potency_print_benchmarks_markdown();
+
 	test_statistics stats;
 	potency_collect_statistics(&stats);
 
@@ -132,6 +151,7 @@ void potency_print_assertion_markdown(potency_test_case* testCase, const char* f
 {
 	potency_print_test_case_markdown(testCase);
 	const size_t escapedMarkdownLength = 4096;
+
 	char escapedMarkdownFile[escapedMarkdownLength];
 	char escapedMarkdownExpression[escapedMarkdownLength];
 
@@ -142,6 +162,7 @@ void potency_print_requirement_markdown(potency_test_case* testCase, const char*
 {
 	potency_print_test_case_markdown(testCase);
 	const size_t escapedMarkdownLength = 4096;
+
 	char escapedMarkdownFile[escapedMarkdownLength];
 	char escapedMarkdownExpression[escapedMarkdownLength];
 
