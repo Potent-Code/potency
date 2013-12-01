@@ -4,14 +4,73 @@
 
 #include <time.h>
 #include <stdbool.h>
+#include <string.h>
 
 static potency_test_case* currentTestCase = NULL;
 static bool caseTagOpen = false;
 
+char* potency_escape_xml(const char* unescaped, char* escaped, const size_t escapedLength)
+{
+	size_t i = 0;
+	size_t j = 0;
+
+	for (i = 0; (i < strlen(unescaped)) && (j < (escapedLength - 7)); i++)
+	{
+		// escape codes at http://www.w3.org/TR/xml/#dt-escape
+		switch(unescaped[i])
+		{
+			case '<':
+				escaped[j++] = '&';
+				escaped[j++] = 'l';
+				escaped[j++] = 't';
+				escaped[j++] = ';';
+				break;
+			case '>':
+				escaped[j++] = '&';
+				escaped[j++] = 'g';
+				escaped[j++] = 't';
+				escaped[j++] = ';';
+				break;
+			case '&':
+				escaped[j++] = '&';
+				escaped[j++] = 'a';
+				escaped[j++] = 'm';
+				escaped[j++] = 'p';
+				escaped[j++] = ';';
+				break;
+			case '"':
+				escaped[j++] = '&';
+				escaped[j++] = 'q';
+				escaped[j++] = 'u';
+				escaped[j++] = 'o';
+				escaped[j++] = 't';
+				escaped[j++] = ';';
+				break;
+			case '\'':
+				escaped[j++] = '&';
+				escaped[j++] = 'a';
+				escaped[j++] = 'p';
+				escaped[j++] = 'o';
+				escaped[j++] = 's';
+				escaped[j++] = ';';
+				break;
+			default:
+				escaped[j++] = unescaped[i];
+		}
+	}
+
+	// null terminate
+	escaped[j] = 0;
+
+	return escaped;
+}
+
 void potency_print_report_header_xml(const char* testSuite)
 {
+	const size_t escapedXMLLength = 4096;
+	char escapedXML[escapedXMLLength];
 	fprintf(reportFileHandle, "<potency>\n");
-	fprintf(reportFileHandle, "\t<test_suite>%s</test_suite>\n", testSuite);
+	fprintf(reportFileHandle, "\t<test_suite>%s</test_suite>\n", potency_escape_xml(testSuite, escapedXML, escapedXMLLength));
 	fprintf(reportFileHandle, "\t<time>%llu</time>\n", (unsigned long long)time(NULL));
 }
 
@@ -49,8 +108,11 @@ void potency_print_test_case_xml(potency_test_case* testCase)
 			caseTagOpen = false;
 		}
 		currentTestCase = testCase;
+
+		const size_t escapedXMLLength = 4096;
+		char escapedXML[escapedXMLLength];
 		fprintf(reportFileHandle, "\t<test_case>\n");
-		fprintf(reportFileHandle, "\t\t<test_case_name>%s</test_case_name>\n", testCase->name);
+		fprintf(reportFileHandle, "\t\t<test_case_name>%s</test_case_name>\n", potency_escape_xml(testCase->name, escapedXML, escapedXMLLength));
 		caseTagOpen = true;
 	}
 }
@@ -59,19 +121,27 @@ void potency_print_test_case_xml(potency_test_case* testCase)
 void potency_print_assertion_xml(potency_test_case* testCase, const char* file, const uint32_t line, const char* expression)
 {
 	potency_print_test_case_xml(testCase);
+
+	const size_t escapedXMLLength = 4096;
+	char escapedXML[escapedXMLLength];
+
 	fprintf(reportFileHandle, "\t\t<assertion>\n");
-	fprintf(reportFileHandle, "\t\t\t<file>%s</file>\n", file);
+	fprintf(reportFileHandle, "\t\t\t<file>%s</file>\n", potency_escape_xml(file, escapedXML, escapedXMLLength));
 	fprintf(reportFileHandle, "\t\t\t<line>%u</line>\n", line);
-	fprintf(reportFileHandle, "\t\t\t<expression>CHECK(%s)</expression>\n", expression);
+	fprintf(reportFileHandle, "\t\t\t<expression>CHECK(%s)</expression>\n", potency_escape_xml(expression, escapedXML, escapedXMLLength));
 	fprintf(reportFileHandle, "\t\t</assertion>\n");
 }
 
 void potency_print_requirement_xml(potency_test_case* testCase, const char* file, const uint32_t line, const char* expression)
 {
 	potency_print_test_case_xml(testCase);
+
+	const size_t escapedXMLLength = 4096;
+	char escapedXML[escapedXMLLength];
+
 	fprintf(reportFileHandle, "\t\t<assertion>\n");
-	fprintf(reportFileHandle, "\t\t\t<file>%s</file>\n", file);
+	fprintf(reportFileHandle, "\t\t\t<file>%s</file>\n", potency_escape_xml(file, escapedXML, escapedXMLLength));
 	fprintf(reportFileHandle, "\t\t\t<line>%u</line>\n", line);
-	fprintf(reportFileHandle, "\t\t\t<expression>REQUIRE(%s)</expression>\n", expression);
+	fprintf(reportFileHandle, "\t\t\t<expression>REQUIRE(%s)</expression>\n", potency_escape_xml(expression, escapedXML, escapedXMLLength));
 	fprintf(reportFileHandle, "\t\t</assertion>\n");
 }

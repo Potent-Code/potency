@@ -8,3 +8,8 @@ TEST_CASE("longTestCase", "A test case with many assertions")
 		CHECK(1==1);
 	}
 }
+
+TEST_CASE("\\`*_{}[]()<>'#+-.!", "A test of markdown escaping")
+{
+	CHECK("\\`*_{}[]()<>'#+-.!" == 0);
+}
