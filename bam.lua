@@ -1,7 +1,7 @@
 -- important paths
 sourcePath = "src/"
 objectPath = "obj/"
-testPath = "src/test/"
+testPath = "test/"
 testObjectPath = "obj/test/"
 
 -- set up compiler settings
