@@ -74,6 +74,27 @@ void potency_print_report_header_xml(const char* testSuite)
 	fprintf(reportFileHandle, "\t<time>%llu</time>\n", (unsigned long long)time(NULL));
 }
 
+void potency_print_benchmarks_xml()
+{
+	potency_test_case_list* currentTestCase = potency_get_test_case_list();
+	const size_t escapedXMLLength = 4096;
+	char escapedXML[escapedXMLLength];
+
+	fprintf(reportFileHandle, "\t<benchmarks>\n");
+	while (currentTestCase != NULL)
+	{
+		if (!potencySettings.filteringOn || currentTestCase->testCase->runTestCase)
+		{
+			fprintf(reportFileHandle, "\t\t<test_case>\n");
+			fprintf(reportFileHandle, "\t\t\t<test_case_name>%s</test_case_name>\n", potency_escape_xml(currentTestCase->testCase->name, escapedXML, escapedXMLLength));
+			fprintf(reportFileHandle, "\t\t\t<run_time>%g</run_time>\n", currentTestCase->testCase->runTime);
+			fprintf(reportFileHandle, "\t\t</test_case>\n");
+		}
+		currentTestCase = currentTestCase->next;
+	}
+	fprintf(reportFileHandle, "\t</benchmarks>\n");
+}
+
 void potency_print_report_xml()
 {
 	test_statistics stats;
@@ -83,6 +104,8 @@ void potency_print_report_xml()
 	{
 		fprintf(reportFileHandle, "\t</test_case>\n");
 	}
+	
+	potency_print_benchmarks_xml();
 
 	fprintf(reportFileHandle, "\t<statistics>\n");
 	fprintf(reportFileHandle, "\t\t<assertions>%u</assertions>\n", stats.assertions);
