@@ -132,6 +132,7 @@ void potency_print_report_markdown()
 
 void potency_print_report_footer_markdown()
 {
+	fprintf(reportFileHandle, "\n#### Potency version: %s ####\n", PACKAGE_VERSION);
 	fprintf(reportFileHandle, "\n");
 }
 

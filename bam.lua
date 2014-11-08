@@ -4,18 +4,40 @@ objectPath = "obj/"
 testPath = "test/"
 testObjectPath = "obj/test/"
 
--- set up compiler settings
-settings = NewSettings()
+-- common settings for all Potency outputs
+function NewPotencySettings()
+	local potency_settings = NewSettings()
 
--- full warning level, treat warnings as errors
-settings.cc.flags:Add("-Wall -Wextra -Werror")
--- use fPIC for making a shared object
-settings.cc.flags:Add("-fPIC")
+	-- use clang (TODO: bootstrap this properly with compiler detection)
+	potency_settings.cc.exe_c = "clang"
+	potency_settings.cc.exe_cxx = "clang++"
+	potency_settings.link.exe = "clang"
+	potency_settings.dll.exe = "clang"
 
--- output objects to obj directory
-settings.cc.Output = function(settings, input)
-	return objectPath .. PathFilename(PathBase(input))
+	-- full warning level, treat warnings as errors, position independent code
+	potency_settings.cc.flags:Add("-Wall", "-Wextra", "-Werror", "-fPIC")
+
+	-- set optimization level
+	if (potency_settings.debug > 0) then
+	        potency_settings.cc.flags:Add("-O0")
+	else
+	        potency_settings.cc.flags:Add("-O3")
+	end
+
+	-- set version string
+	potency_settings.cc.defines:Add("PACKAGE_VERSION=\\\"`git describe --always --tags --dirty=-modified --abbrev=10`-`git rev-parse --abbrev-ref HEAD`\\\"")
+
+	-- output objects to obj directory
+	potency_settings.cc.Output = function(potency_settings, input)
+	        return objectPath .. PathFilename(PathBase(input))
+	end
+
+	return potency_settings
 end
+
+
+-- set up compiler settings
+settings = NewPotencySettings()
 
 -- collect sources and compile
 source = Collect(sourcePath .. "*.c")
@@ -25,17 +47,9 @@ objects = Compile(settings, source)
 libpotency = SharedLibrary(settings, "libpotency", objects)
 
 -- build test binary
-settings = NewSettings()
--- full warning level, treat warnings as errors
-settings.cc.flags:Add("-Wall -Wextra -Werror")
--- use fPIC for making a shared object
-settings.cc.flags:Add("-fPIC")
-settings.cc.includes:Add(sourcePath)
+settings = NewPotencySettings()
 
--- output objects to obj directory
-settings.cc.Output = function(settings, input)
-	return testObjectPath .. PathFilename(PathBase(input))
-end
+settings.cc.includes:Add(sourcePath)
 
 -- compile test_potency test suite
 source = Collect(testPath .. "*.c")
