@@ -1,8 +1,15 @@
--- important paths
+-- input paths
 sourcePath = "src/"
-objectPath = "obj/"
 testPath = "test/"
 testObjectPath = "obj/test/"
+
+-- output paths
+outputPath = "build/"
+objectPath = outputPath .. "obj/"
+outputLibPath = outputPath .. "usr/local/lib/"
+outputBinPath = outputPath .. "usr/local/bin/"
+outputIncludePath = outputPath .. "usr/local/include/"
+
 
 -- common settings for all Potency outputs
 function NewPotencySettings()
@@ -35,6 +42,11 @@ function NewPotencySettings()
 	return potency_settings
 end
 
+-- set up output directories
+ExecuteSilent("mkdir -p " .. outputLibPath)
+ExecuteSilent("mkdir -p " .. outputBinPath)
+ExecuteSilent("mkdir -p " .. outputIncludePath)
+
 
 -- set up compiler settings
 settings = NewPotencySettings()
@@ -44,7 +56,7 @@ source = Collect(sourcePath .. "*.c")
 objects = Compile(settings, source)
 
 -- make shared objects
-libpotency = SharedLibrary(settings, "libpotency", objects)
+libpotency = SharedLibrary(settings, outputLibPath .. "libpotency", objects)
 
 -- build test binary
 settings = NewPotencySettings()
@@ -54,4 +66,7 @@ settings.cc.includes:Add(sourcePath)
 -- compile test_potency test suite
 source = Collect(testPath .. "*.c")
 objects = Compile(settings, source)
-exe = Link(settings, "test_potency", objects, libpotency)
+exe = Link(settings, outputBinPath .. "test_potency", objects, libpotency)
+
+-- copy library header
+AddJob("potency.h", "potency.h", "cp src/potency.h " .. outputIncludePath)
