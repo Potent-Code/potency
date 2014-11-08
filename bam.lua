@@ -67,3 +67,6 @@ settings.cc.includes:Add(sourcePath)
 source = Collect(testPath .. "*.c")
 objects = Compile(settings, source)
 exe = Link(settings, outputBinPath .. "test_potency", objects, libpotency)
+
+-- copy library header
+AddJob("potency.h", "potency.h", "cp src/potency.h " .. outputIncludePath)
