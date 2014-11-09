@@ -4,6 +4,10 @@ Potency is a unit test framework for C that makes it easy to write unit tests.
 Potency supports test case filtering, benchmarking, and custom set up and tear down functions.
 Potency has output modes for Markdown, XML, and JSON so your unit tests can easily parsed by continuous integration systems.
 
+## Dependencies ##
+Potency depends on bam to build. If you don't have it already, you can get it at http://matricks.github.io/bam/
+Bam is an excellent build system that is extremely portable, lightweight, fast, and flexible.
+
 ## Installation ##
 To install potency, simply run the following commands:
 
