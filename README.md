@@ -1,8 +1,8 @@
 # Potency #
 
 Potency is a unit test framework for C that makes it easy to write unit tests.
-Potency supports test case filtering, benchmarking, and custom set up and tear down functions
-with output modes for Markdown, XML, and JSON so your unit tests can easily parsed by continuous integration systems.
+Potency supports test case filtering, benchmarking, and custom set up and tear down functions.
+Potency has output modes for Markdown, XML, and JSON so your unit tests can easily parsed by continuous integration systems.
 
 ## Installation ##
 To install potency, simply run the following commands:
