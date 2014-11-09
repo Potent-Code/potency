@@ -39,7 +39,7 @@ TEST_CASE("samples/testCase1", "A simple example of a test case")
 	REQUIRE(fh != NULL);
 
 	// test writing to a file
-	const char* str = "Hello, World!\n");
+	const char* str = "Hello, World!\n";
 	const size_t len = strlen(str);
 	CHECK(fprintf(fh, "%s", str) == len);
 }
