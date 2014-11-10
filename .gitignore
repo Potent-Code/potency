@@ -3,3 +3,6 @@
 
 # ignore compilation output directory
 build
+
+# vim temporary files
+*.swp
