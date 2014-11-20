@@ -209,7 +209,7 @@ int main(int argc, char** argv)
 		return 0;
 	}
 
-	// setup output functions
+	// set up output functions
 	switch (potencySettings.format)
 	{
 		case outputFormatJSON:
