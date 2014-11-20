@@ -202,7 +202,7 @@ int main(int argc, char** argv)
 	{
 		while (currentCase != NULL)
 		{
-			printf("%-30s* %s\n", currentCase->testCase->name, currentCase->testCase->description);
+			printf("%-50s* %s\n", currentCase->testCase->name, currentCase->testCase->description);
 			currentCase = currentCase->next;
 		}
 		potency_cleanup_test_cases();

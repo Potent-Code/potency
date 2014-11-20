@@ -120,3 +120,4 @@ extern FILE* reportFileHandle;
 	}
 
 #endif // !potency_h
+
