@@ -12,9 +12,9 @@ static potency_test_case_list* testCaseHead = NULL;
 
 potency_output_function potency_print_assertion = NULL;		// output function for CHECK
 potency_output_function potency_print_requirement = NULL;	// output function for REQUIRE
-potency_setup_function potency_setup = NULL;				// user supplied set up function
-potency_teardown_function potency_teardown = NULL;			// user supplied tear down function
-FILE* reportFileHandle = NULL;								// file handle to output report to
+potency_setup_function potency_setup = NULL;			// user supplied set up function
+potency_teardown_function potency_teardown = NULL;		// user supplied tear down function
+FILE* reportFileHandle = NULL;					// file handle to output report to
 
 potency_settings potencySettings;
 
