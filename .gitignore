@@ -1,11 +1,8 @@
-# ignore bam intermediates
+# ignore bam cache
 .bam
 
 # ignore compilation output directory
-obj
+build
 
-# ignore shared libraries
-*.so
-
-# ignore test binary
-test_potency
+# vim temporary files
+*.swp

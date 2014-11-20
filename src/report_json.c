@@ -43,6 +43,7 @@ void potency_print_report_header_json(const char* testSuite)
 	fprintf(reportFileHandle, "{\n");
 	fprintf(reportFileHandle, "\t\"test_suite\":\"%s\",\n", potency_escape_json(testSuite, escapedJSON, escapedJSONLength));
 	fprintf(reportFileHandle, "\t\"time\":%llu,\n", (unsigned long long)time(NULL));
+	fprintf(reportFileHandle, "\t\"potency_version\": \"%s\",\n", potency_escape_json(PACKAGE_VERSION, escapedJSON, escapedJSONLength));
 }
 
 void potency_print_benchmarks_json()

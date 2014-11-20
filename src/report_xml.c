@@ -70,6 +70,7 @@ void potency_print_report_header_xml(const char* testSuite)
 	const size_t escapedXMLLength = 4096;
 	char escapedXML[escapedXMLLength];
 	fprintf(reportFileHandle, "<potency>\n");
+	fprintf(reportFileHandle, "\t<version>%s</version>\n", potency_escape_xml(PACKAGE_VERSION, escapedXML, escapedXMLLength));
 	fprintf(reportFileHandle, "\t<test_suite>%s</test_suite>\n", potency_escape_xml(testSuite, escapedXML, escapedXMLLength));
 	fprintf(reportFileHandle, "\t<time>%llu</time>\n", (unsigned long long)time(NULL));
 }
