@@ -1,6 +1,6 @@
 #include <potency.h>
 
-TEST_CASE("longTestCase", "A test case with many assertions")
+TEST_CASE("/potency/longTestCase", "A test case with many assertions")
 {
 	uint32_t i = 0;
 	for (i = 0; i < 10000000; i++)
@@ -9,7 +9,7 @@ TEST_CASE("longTestCase", "A test case with many assertions")
 	}
 }
 
-TEST_CASE("\\`*_{}[]()<>'#+-.!", "A test of markdown escaping")
+TEST_CASE("/potency/escaping/\\`*_{}[]()<>'#+-.!", "A test of markdown escaping")
 {
 	CHECK("\\`*_{}[]()<>'#+-.!" == 0);
 }
