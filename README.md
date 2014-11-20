@@ -25,26 +25,30 @@ Let's have a look at how easy Potency makes writing unit tests with some example
 #include <stdio.h>
 #include <string.h>
 #include <potency.h>
-#include "myHeader.h"
 
-TEST_CASE("samples/testCase1", "A simple example of a test case")
+TEST_CASE("/potency/samples/fprintf", "Test writing to a file")
 {
-	// test a function that returns a known value
-	// CHECK generates an assertion count in the output
-	CHECK(myFunc(5) == 3);
+	const char* filename = "myFile.txt";
 
-	FILE* fh = fopen("myFile.txt", "w");
+	FILE* fh = fopen(filename, "w");
 	// REQUIRE returns immediately if the condition is not true and does NOT generate an assertion count in the output
 	// in this case we are not testing whether we can open the file, but we require that we can for the tests following
-	REQUIRE(fh != NULL);
+	REQUIRE(fh);
 
 	// test writing to a file
 	const char* str = "Hello, World!\n";
 	const size_t len = strlen(str);
-	CHECK(fprintf(fh, "%s", str) == len);
+	CHECK(fprintf(fh, "%s", str) == (int)len);
+
+	// test closing the file
+	CHECK(fclose(fh) == 0);
+
+	// to clean up, let's delete that file we just created
+	CHECK(remove(filename) == 0);
 }
 
 ```
+
 
 That's it! So we have seen how we can write self contained test cases with the TEST_CASE(), CHECK(), and REQUIRE() macros. A collection 
 of test cases can be compiled together and linked to potency to form a test suite. But what if we want to write test cases that are 
@@ -62,7 +66,7 @@ char* buffer = NULL;
 void* setup()
 {
 	buffer = calloc(1024, 1);
-	return buffer;	
+	return buffer;
 }
 
 void teardown(void* p)
@@ -74,19 +78,19 @@ void teardown(void* p)
 POTENCY_SETUP(&setup);
 POTENCY_TEARDOWN(&teardown);
 
-TEST_CASE("samples/testCase2", "A simple example of a test case")
+TEST_CASE("/potency/samples/memcpy", "A simple example of a test case")
 {
-	REQUIRE(buffer != NULL);
+	REQUIRE(buffer);
 	const char* str = "Hello, World\n";
 	memcpy(buffer, str, strlen(str));
 	CHECK(memcmp(buffer, str, strlen(str)) == 0);
 }
 
-TEST_CASE("samples/testCase3", "A simple example of a test case")
+TEST_CASE("/potency/samples/memset", "A simple example of a test case")
 {
-	REQUIRE(buffer != NULL);
+	REQUIRE(buffer);
 	memset(buffer, 0, 1024);
-	CHECK(strlen(buffer) == 0);	
+	CHECK(strlen(buffer) == 0);
 }
 
 ```
