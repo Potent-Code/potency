@@ -132,7 +132,9 @@ void potency_print_report_markdown()
 
 void potency_print_report_footer_markdown()
 {
-	fprintf(reportFileHandle, "\n#### Potency version: %s ####\n", PACKAGE_VERSION);
+	const size_t escapedMarkdownLength = 4096;
+	char escapedMarkdown[escapedMarkdownLength];
+	fprintf(reportFileHandle, "\n#### Potency version: %s ####\n", potency_escape_markdown(PACKAGE_VERSION, escapedMarkdown, escapedMarkdownLength));
 	fprintf(reportFileHandle, "\n");
 }
 
