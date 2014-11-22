@@ -63,18 +63,22 @@ potency_test_case_list* potency_get_test_case_list()
 	return testCaseHead;
 }
 
-static void potency_cleanup_test_cases()
+static bool potency_cleanup_test_cases()
 {
+	bool allPassed = true;
 	potency_test_case_list* currentTestCaseList = potency_get_test_case_list();
 
 	while (currentTestCaseList != NULL)
 	{
+		// as we're freeing test cases, lets figure out if they all passed
+		allPassed = allPassed && (currentTestCaseList->testCase->assertions == currentTestCaseList->testCase->passedAssertions);
 		free(currentTestCaseList->testCase);
 
 		potency_test_case_list* toBeFreed = currentTestCaseList;
 		currentTestCaseList = toBeFreed->next;
 		free(toBeFreed);
 	}
+	return allPassed;
 }
 
 output_format potency_get_output_format(const char* formatName)
@@ -290,6 +294,6 @@ int main(int argc, char** argv)
 	fclose(reportFileHandle);
 
 	// clean up
-	potency_cleanup_test_cases();
-	return 0;
+	int returnValue = (potency_cleanup_test_cases() ? 0 : 1);
+	return returnValue;
 }
