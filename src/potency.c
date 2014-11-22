@@ -287,10 +287,7 @@ int main(int argc, char** argv)
 	}
 
 	// close output report file handle
-	if (reportFileHandle != stdout)
-	{
-		fclose(reportFileHandle);
-	}
+	fclose(reportFileHandle);
 
 	// clean up
 	potency_cleanup_test_cases();
