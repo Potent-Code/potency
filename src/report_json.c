@@ -116,7 +116,7 @@ void potency_print_test_case_json(potency_test_case* testCase)
 	}
 }
 
-void potency_print_assertion_json(potency_test_case* testCase, const char* file, const uint32_t line, const char* expression)
+void potency_print_assertion_json(potency_test_case* testCase, bool passed, const char* file, const uint32_t line, const char* expression)
 {
 	potency_print_test_case_json(testCase);
 	if (caseTagOpen)
@@ -129,6 +129,7 @@ void potency_print_assertion_json(potency_test_case* testCase, const char* file,
 
 	fprintf(reportFileHandle, "\t\t{\n");
 	fprintf(reportFileHandle, "\t\t\t\"assertion\": {\n");
+	fprintf(reportFileHandle, "\t\t\t\t\"passed\": \"%s\",\n", (passed ? "yes" : "no"));
 	fprintf(reportFileHandle, "\t\t\t\t\"file\": \"%s\",\n", potency_escape_json(file, escapedJSON, escapedJSONLength));
 	fprintf(reportFileHandle, "\t\t\t\t\"line\": %u,\n", line);
 	fprintf(reportFileHandle, "\t\t\t\t\"expression\": \"CHECK(%s)\"\n", potency_escape_json(expression, escapedJSON, escapedJSONLength));
@@ -136,7 +137,7 @@ void potency_print_assertion_json(potency_test_case* testCase, const char* file,
 	fprintf(reportFileHandle, "\t\t}");
 }
 
-void potency_print_requirement_json(potency_test_case* testCase, const char* file, const uint32_t line, const char* expression)
+void potency_print_requirement_json(potency_test_case* testCase, bool passed, const char* file, const uint32_t line, const char* expression)
 {
 	potency_print_test_case_json(testCase);
 	if (caseTagOpen)
@@ -149,6 +150,7 @@ void potency_print_requirement_json(potency_test_case* testCase, const char* fil
 
 	fprintf(reportFileHandle, "\t\t{\n");
 	fprintf(reportFileHandle, "\t\t\t\"assertion\": {\n");
+	fprintf(reportFileHandle, "\t\t\t\t\"passed\": \"%s\",\n", (passed ? "yes" : "no"));
 	fprintf(reportFileHandle, "\t\t\t\t\"file\": \"%s\",\n", potency_escape_json(file, escapedJSON, escapedJSONLength));
 	fprintf(reportFileHandle, "\t\t\t\t\"line\": %u,\n", line);
 	fprintf(reportFileHandle, "\t\t\t\t\"expression\": \"REQUIRE(%s)\"\n", potency_escape_json(expression, escapedJSON, escapedJSONLength));
