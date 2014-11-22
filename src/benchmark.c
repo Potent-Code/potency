@@ -14,3 +14,4 @@ double potency_get_time()
 
 	return (double)tv.tv_sec + ((double)tv.tv_usec * 1.0e-6);
 }
+

@@ -10,3 +10,4 @@ extern void potency_print_assertion_json(potency_test_case* testCase, const char
 extern void potency_print_requirement_json(potency_test_case* testCase, const char* file, const uint32_t line, const char* expression);
 
 #endif // !potency_report_json_h
+

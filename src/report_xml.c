@@ -169,3 +169,4 @@ void potency_print_requirement_xml(potency_test_case* testCase, const char* file
 	fprintf(reportFileHandle, "\t\t\t<expression>REQUIRE(%s)</expression>\n", potency_escape_xml(expression, escapedXML, escapedXMLLength));
 	fprintf(reportFileHandle, "\t\t</assertion>\n");
 }
+

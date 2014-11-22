@@ -8,3 +8,4 @@ extern void potency_print_assertion_xml(potency_test_case* testCase, const char*
 extern void potency_print_requirement_xml(potency_test_case* testCase, const char* file, const uint32_t line, const char* expression);
 
 #endif // !potency_report_xml_h
+

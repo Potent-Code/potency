@@ -16,3 +16,4 @@ typedef struct _test_statistics
 extern void potency_collect_statistics(test_statistics* stats);
 
 #endif // !potency_report_h
+

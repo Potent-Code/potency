@@ -48,3 +48,4 @@ void potency_collect_statistics(test_statistics* stats)
 		stats->successPercentage = 99.99;
 	}
 }
+

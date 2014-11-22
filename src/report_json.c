@@ -155,3 +155,4 @@ void potency_print_requirement_json(potency_test_case* testCase, const char* fil
 	fprintf(reportFileHandle, "\t\t\t}\n");
 	fprintf(reportFileHandle, "\t\t}");
 }
+
