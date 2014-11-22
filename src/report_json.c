@@ -100,17 +100,13 @@ void potency_print_report_footer_json()
 
 void potency_print_test_case_json(potency_test_case* testCase)
 {
+	// TODO: output test case name in test cases array
 	if (currentTestCase != testCase)
 	{
 		if (currentTestCase == NULL)
 		{
 			fprintf(reportFileHandle, "\t\"test_cases\": [\n");
 			testCasesArray = true;
-			caseTagOpen = false;
-		}
-		else
-		{
-			caseTagOpen = true;
 		}
 		currentTestCase = testCase;
 	}
@@ -122,6 +118,10 @@ void potency_print_assertion_json(potency_test_case* testCase, bool passed, cons
 	if (caseTagOpen)
 	{
 		fprintf(reportFileHandle, ",\n");
+	}
+	else
+	{
+		caseTagOpen = true;
 	}
 
 	const size_t escapedJSONLength = 4096;
@@ -143,6 +143,10 @@ void potency_print_requirement_json(potency_test_case* testCase, bool passed, co
 	if (caseTagOpen)
 	{
 		fprintf(reportFileHandle, ",\n");
+	}
+	else
+	{
+		caseTagOpen = true;
 	}
 
 	const size_t escapedJSONLength = 4096;
