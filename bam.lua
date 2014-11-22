@@ -63,10 +63,10 @@ settings = NewPotencySettings()
 
 settings.cc.includes:Add(sourcePath)
 
--- compile test_potency test suite
+-- compile potency test suite (unit tests of itself)
 source = Collect(testPath .. "*.c")
 objects = Compile(settings, source)
-exe = Link(settings, outputBinPath .. "test_potency", objects, libpotency)
+exe = Link(settings, outputBinPath .. "potency_test_suite", objects, libpotency)
 
 -- copy library header
 AddJob("potency.h", "potency.h", "cp src/potency.h " .. outputIncludePath)
