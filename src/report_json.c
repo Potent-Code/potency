@@ -129,7 +129,7 @@ void potency_print_assertion_json(potency_test_case* testCase, bool passed, cons
 
 	fprintf(reportFileHandle, "\t\t{\n");
 	fprintf(reportFileHandle, "\t\t\t\"assertion\": {\n");
-	fprintf(reportFileHandle, "\t\t\t\t\"passed\": \"%s\",\n", (passed ? "yes" : "no"));
+	fprintf(reportFileHandle, "\t\t\t\t\"passed\": %s,\n", (passed ? "true" : "false"));
 	fprintf(reportFileHandle, "\t\t\t\t\"file\": \"%s\",\n", potency_escape_json(file, escapedJSON, escapedJSONLength));
 	fprintf(reportFileHandle, "\t\t\t\t\"line\": %u,\n", line);
 	fprintf(reportFileHandle, "\t\t\t\t\"expression\": \"CHECK(%s)\"\n", potency_escape_json(expression, escapedJSON, escapedJSONLength));
@@ -150,7 +150,7 @@ void potency_print_requirement_json(potency_test_case* testCase, bool passed, co
 
 	fprintf(reportFileHandle, "\t\t{\n");
 	fprintf(reportFileHandle, "\t\t\t\"assertion\": {\n");
-	fprintf(reportFileHandle, "\t\t\t\t\"passed\": \"%s\",\n", (passed ? "yes" : "no"));
+	fprintf(reportFileHandle, "\t\t\t\t\"passed\": %s,\n", (passed ? "true" : "false"));
 	fprintf(reportFileHandle, "\t\t\t\t\"file\": \"%s\",\n", potency_escape_json(file, escapedJSON, escapedJSONLength));
 	fprintf(reportFileHandle, "\t\t\t\t\"line\": %u,\n", line);
 	fprintf(reportFileHandle, "\t\t\t\t\"expression\": \"REQUIRE(%s)\"\n", potency_escape_json(expression, escapedJSON, escapedJSONLength));
