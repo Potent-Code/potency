@@ -142,7 +142,7 @@ void potency_print_test_case_xml(potency_test_case* testCase)
 }
 
 
-void potency_print_assertion_xml(potency_test_case* testCase, const char* file, const uint32_t line, const char* expression)
+void potency_print_assertion_xml(potency_test_case* testCase, bool passed, const char* file, const uint32_t line, const char* expression)
 {
 	potency_print_test_case_xml(testCase);
 
@@ -150,13 +150,14 @@ void potency_print_assertion_xml(potency_test_case* testCase, const char* file, 
 	char escapedXML[escapedXMLLength];
 
 	fprintf(reportFileHandle, "\t\t<assertion>\n");
+	fprintf(reportFileHandle, "\t\t\t<passed>%s</passed>\n", (passed ? "yes" : "no"));
 	fprintf(reportFileHandle, "\t\t\t<file>%s</file>\n", potency_escape_xml(file, escapedXML, escapedXMLLength));
 	fprintf(reportFileHandle, "\t\t\t<line>%u</line>\n", line);
 	fprintf(reportFileHandle, "\t\t\t<expression>CHECK(%s)</expression>\n", potency_escape_xml(expression, escapedXML, escapedXMLLength));
 	fprintf(reportFileHandle, "\t\t</assertion>\n");
 }
 
-void potency_print_requirement_xml(potency_test_case* testCase, const char* file, const uint32_t line, const char* expression)
+void potency_print_requirement_xml(potency_test_case* testCase, bool passed, const char* file, const uint32_t line, const char* expression)
 {
 	potency_print_test_case_xml(testCase);
 
@@ -164,6 +165,7 @@ void potency_print_requirement_xml(potency_test_case* testCase, const char* file
 	char escapedXML[escapedXMLLength];
 
 	fprintf(reportFileHandle, "\t\t<assertion>\n");
+	fprintf(reportFileHandle, "\t\t\t<passed>%s</passed>\n", (passed ? "yes" : "no"));
 	fprintf(reportFileHandle, "\t\t\t<file>%s</file>\n", potency_escape_xml(file, escapedXML, escapedXMLLength));
 	fprintf(reportFileHandle, "\t\t\t<line>%u</line>\n", line);
 	fprintf(reportFileHandle, "\t\t\t<expression>REQUIRE(%s)</expression>\n", potency_escape_xml(expression, escapedXML, escapedXMLLength));
