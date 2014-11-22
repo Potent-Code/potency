@@ -62,7 +62,7 @@ typedef struct _potency_test_case_list
 } potency_test_case_list;
 
 // potency_output_function takes __FILE__, __LINE__, #expression
-typedef void(*potency_output_function)(potency_test_case* testCase, const char*, const uint32_t, const char*);
+typedef void(*potency_output_function)(potency_test_case* testCase, bool, const char*, const uint32_t, const char*);
 
 typedef void*(*potency_setup_function)();
 typedef void(*potency_teardown_function)(void*);
@@ -106,17 +106,25 @@ extern FILE* reportFileHandle;
 	if (expression)\
 	{\
 		testCase->passedAssertions++;\
+		if (potencySettings.verboseMode)\
+		{\
+			(*potency_print_assertion(testCase, true, __FILE__, __LINE__, #expression);\
+		}\
 	}\
 	else\
 	{\
-		(*potency_print_assertion)(testCase, __FILE__, __LINE__, #expression);\
+		(*potency_print_assertion)(testCase, false, __FILE__, __LINE__, #expression);\
 	}
 
 #define REQUIRE(expression)\
 	if (!expression)\
 	{\
-		(*potency_print_requirement)(testCase, __FILE__, __LINE__, #expression);\
+		(*potency_print_requirement)(testCase, false, __FILE__, __LINE__, #expression);\
 		return;\
+	}\
+	else if (potencySettings.verboseMode)\
+	{\
+		(*potency_print_requirement(testCase, true, __FILE__, __LINE__, #expression);\
 	}
 
 #endif // !potency_h
