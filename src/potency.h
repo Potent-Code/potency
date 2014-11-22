@@ -108,7 +108,7 @@ extern FILE* reportFileHandle;
 		testCase->passedAssertions++;\
 		if (potencySettings.verboseMode)\
 		{\
-			(*potency_print_assertion(testCase, true, __FILE__, __LINE__, #expression);\
+			(*potency_print_assertion)(testCase, true, __FILE__, __LINE__, #expression);\
 		}\
 	}\
 	else\
@@ -124,7 +124,7 @@ extern FILE* reportFileHandle;
 	}\
 	else if (potencySettings.verboseMode)\
 	{\
-		(*potency_print_requirement(testCase, true, __FILE__, __LINE__, #expression);\
+		(*potency_print_requirement)(testCase, true, __FILE__, __LINE__, #expression);\
 	}
 
 #endif // !potency_h
