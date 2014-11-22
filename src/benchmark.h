@@ -4,3 +4,4 @@
 extern double potency_get_time();
 
 #endif // !benchmark_h
+

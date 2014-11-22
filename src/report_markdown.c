@@ -150,7 +150,7 @@ void potency_print_test_case_markdown(potency_test_case* testCase)
 	}
 }
 
-void potency_print_assertion_markdown(potency_test_case* testCase, const char* file, const uint32_t line, const char* expression)
+void potency_print_assertion_markdown(potency_test_case* testCase, bool passed, const char* file, const uint32_t line, const char* expression)
 {
 	potency_print_test_case_markdown(testCase);
 	const size_t escapedMarkdownLength = 4096;
@@ -158,10 +158,10 @@ void potency_print_assertion_markdown(potency_test_case* testCase, const char* f
 	char escapedMarkdownFile[escapedMarkdownLength];
 	char escapedMarkdownExpression[escapedMarkdownLength];
 
-	fprintf(reportFileHandle, "> 1. **%s (%u)**: *assertion failed* - ` CHECK(%s) `  \n", potency_escape_markdown(file, escapedMarkdownFile, escapedMarkdownLength), line, potency_escape_markdown_backticks(expression, escapedMarkdownExpression, escapedMarkdownLength));
+	fprintf(reportFileHandle, "> 1. **%s (%u)**: *assertion %s* - ` CHECK(%s) `  \n", potency_escape_markdown(file, escapedMarkdownFile, escapedMarkdownLength), line, (passed ? "passed" : "failed"), potency_escape_markdown_backticks(expression, escapedMarkdownExpression, escapedMarkdownLength));
 }
 
-void potency_print_requirement_markdown(potency_test_case* testCase, const char* file, const uint32_t line, const char* expression)
+void potency_print_requirement_markdown(potency_test_case* testCase, bool passed, const char* file, const uint32_t line, const char* expression)
 {
 	potency_print_test_case_markdown(testCase);
 	const size_t escapedMarkdownLength = 4096;
@@ -169,5 +169,5 @@ void potency_print_requirement_markdown(potency_test_case* testCase, const char*
 	char escapedMarkdownFile[escapedMarkdownLength];
 	char escapedMarkdownExpression[escapedMarkdownLength];
 
-	fprintf(reportFileHandle, "> 1. **%s (%u)**: *assertion failed* - ` REQUIRE(%s) `  \n", potency_escape_markdown(file, escapedMarkdownFile, escapedMarkdownLength), line, potency_escape_markdown_backticks(expression, escapedMarkdownExpression, escapedMarkdownLength));
+	fprintf(reportFileHandle, "> 1. **%s (%u)**: *assertion %s* - ` REQUIRE(%s) `  \n", potency_escape_markdown(file, escapedMarkdownFile, escapedMarkdownLength), line, (passed ? "passed" : "failed"), potency_escape_markdown_backticks(expression, escapedMarkdownExpression, escapedMarkdownLength));
 }
