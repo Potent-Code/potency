@@ -172,3 +172,20 @@ void potency_print_requirement_xml(potency_test_case* testCase, bool passed, con
 	fprintf(reportFileHandle, "\t\t</assertion>\n");
 }
 
+void potency_print_list_xml()
+{
+	potency_test_case_list* currentTestCase = potency_get_test_case_list();
+
+	const size_t escapedXMLLength = 4096;
+	char escapedXML[escapedXMLLength];
+
+	while (currentTestCase != NULL)
+	{
+		fprintf(reportFileHandle, "\t<test_case>\n");
+		fprintf(reportFileHandle, "\t\t<name>%s</name>\n", potency_escape_xml(currentTestCase->testCase->name, escapedXML, escapedXMLLength));
+		fprintf(reportFileHandle, "\t\t<description>%s</description>\n", potency_escape_xml(currentTestCase->testCase->description, escapedXML, escapedXMLLength));
+		fprintf(reportFileHandle, "\t</test_case>\n");
+		currentTestCase = currentTestCase->next;
+	}
+}
+
