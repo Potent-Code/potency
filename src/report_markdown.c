@@ -171,3 +171,19 @@ void potency_print_requirement_markdown(potency_test_case* testCase, bool passed
 
 	fprintf(reportFileHandle, "> 1. **%s (%u)**: *assertion %s* - ` REQUIRE(%s) `  \n", potency_escape_markdown(file, escapedMarkdownFile, escapedMarkdownLength), line, (passed ? "passed" : "failed"), potency_escape_markdown_backticks(expression, escapedMarkdownExpression, escapedMarkdownLength));
 }
+
+void potency_print_list_markdown()
+{
+	potency_test_case_list* currentTestCase = potency_get_test_case_list();
+
+	const size_t escapedMarkdownLength = 4096;
+	char escapedMarkdownName[escapedMarkdownLength];
+	char escapedMarkdownDescription[escapedMarkdownLength];
+
+	while (currentTestCase != NULL)
+	{
+		fprintf(reportFileHandle, "> 1. **%s - %s\n", potency_escape_markdown(currentTestCase->testCase->name, escapedMarkdownName, escapedMarkdownLength), potency_escape_markdown(currentTestCase->testCase->description, escapedMarkdownDescription, escapedMarkdownLength));
+		currentTestCase = currentTestCase->next;
+	}
+}
+

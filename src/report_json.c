@@ -162,3 +162,32 @@ void potency_print_requirement_json(potency_test_case* testCase, bool passed, co
 	fprintf(reportFileHandle, "\t\t}");
 }
 
+void potency_print_list_json()
+{
+	potency_test_case_list* currentTestCase = potency_get_test_case_list();
+
+	const size_t escapedJSONLength = 4096;
+	char escapedJSON[escapedJSONLength];
+
+	if (currentTestCase != NULL)
+	{
+		fprintf(reportFileHandle, "\t\"test_cases\": [\n");
+
+		while (currentTestCase != NULL)
+		{
+			fprintf(reportFileHandle, "\t\t{\n");
+			fprintf(reportFileHandle, "\t\t\t\"name\": \"%s\",\n", potency_escape_json(currentTestCase->testCase->name, escapedJSON, escapedJSONLength));
+			fprintf(reportFileHandle, "\t\t\t\"description\": \"%s\"\n", potency_escape_json(currentTestCase->testCase->description, escapedJSON, escapedJSONLength));
+			fprintf(reportFileHandle, "\t\t}");
+			if (currentTestCase->next != NULL)
+			{
+				fprintf(reportFileHandle, ",");
+			}
+			fprintf(reportFileHandle, "\n");
+			currentTestCase = currentTestCase->next;
+		}
+
+		fprintf(reportFileHandle, "\t]\n");
+	}
+}
+

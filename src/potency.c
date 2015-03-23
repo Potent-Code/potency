@@ -108,6 +108,7 @@ int main(int argc, char** argv)
 	void(*potency_print_report)() = NULL;
 	void(*potency_print_report_header)(const char*) = NULL;
 	void(*potency_print_report_footer)() = NULL;
+	void(*potency_print_list)() = NULL;
 
 	// set default potencySettings
 	potencySettings.threads = 1;
@@ -202,17 +203,6 @@ int main(int argc, char** argv)
 		return 0;
 	}
 
-	if (potencySettings.listMode)
-	{
-		while (currentCase != NULL)
-		{
-			printf("%-50s* %s\n", currentCase->testCase->name, currentCase->testCase->description);
-			currentCase = currentCase->next;
-		}
-		potency_cleanup_test_cases();
-		return 0;
-	}
-
 	// set up output functions
 	switch (potencySettings.format)
 	{
@@ -222,6 +212,7 @@ int main(int argc, char** argv)
 			potency_print_report_footer = &potency_print_report_footer_json;
 			potency_print_assertion = &potency_print_assertion_json;
 			potency_print_requirement = &potency_print_requirement_json;
+			potency_print_list = &potency_print_list_json;
 			break;
 		case outputFormatXML:
 			potency_print_report_header = &potency_print_report_header_xml;
@@ -229,6 +220,7 @@ int main(int argc, char** argv)
 			potency_print_report_footer = &potency_print_report_footer_xml;
 			potency_print_assertion = &potency_print_assertion_xml;
 			potency_print_requirement = &potency_print_requirement_xml;
+			potency_print_list = &potency_print_list_xml;
 			break;
 		case outputFormatMarkdown:
 		default:
@@ -237,6 +229,7 @@ int main(int argc, char** argv)
 			potency_print_report_footer = &potency_print_report_footer_markdown;
 			potency_print_assertion = &potency_print_assertion_markdown;
 			potency_print_requirement = &potency_print_requirement_markdown;
+			potency_print_list = &potency_print_list_markdown;
 			break;
 	}
 
@@ -257,6 +250,16 @@ int main(int argc, char** argv)
 	{
 		// default to standard output
 		reportFileHandle = stdout;
+	}
+
+	// print list and return if in list mode
+	if (potencySettings.listMode)
+	{
+		potency_print_report_header(argv[0]);
+		potency_print_list();
+		potency_print_report_footer();
+		potency_cleanup_test_cases();
+		return 0;
 	}
 
 	// run setup function
