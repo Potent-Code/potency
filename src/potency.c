@@ -108,7 +108,7 @@ int main(int argc, char** argv)
 	void(*potency_print_report)() = NULL;
 	void(*potency_print_report_header)(const char*) = NULL;
 	void(*potency_print_report_footer)() = NULL;
-	void(*potency_print_list)(potency_test_case_list*) = NULL;
+	void(*potency_print_list)() = NULL;
 
 	// set default potencySettings
 	potencySettings.threads = 1;
@@ -236,14 +236,6 @@ int main(int argc, char** argv)
 	// reset the current test case
 	currentCase = potency_get_test_case_list();
 
-	// print list and return if in list mode
-	if (potencySettings.listMode)
-	{
-		potency_print_list(currentCase);
-		potency_cleanup_test_cases();
-		return 0;
-	}
-
 	if (potencySettings.outputFile != NULL)
 	{
 		reportFileHandle = fopen(potencySettings.outputFile, "w+");
@@ -258,6 +250,16 @@ int main(int argc, char** argv)
 	{
 		// default to standard output
 		reportFileHandle = stdout;
+	}
+
+	// print list and return if in list mode
+	if (potencySettings.listMode)
+	{
+		potency_print_report_header(argv[0]);
+		potency_print_list();
+		potency_print_report_footer();
+		potency_cleanup_test_cases();
+		return 0;
 	}
 
 	// run setup function
